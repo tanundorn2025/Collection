@@ -764,7 +764,7 @@ const CS_GROUPS=[['g20o','เกณฑ์ 20,000 · เกิน'],['g20u','เ�
 let csOff=new Set(); try{ csOff=new Set(JSON.parse(localStorage.getItem('csOff')||'[]')); }catch(e){}
 function saveCsOff(){ try{localStorage.setItem('csOff',JSON.stringify([...csOff]));}catch(e){} }
 const NPL_COLS=[['remHQ','มูลหนี้คงเหลือ · อำนาจ (HQ)'],['cHQ','จำนวนราย · อำนาจ (HQ)','n'],['remHQp','% คงเหลือ HQ / คงเหลือรวม','%'],['remBR','มูลหนี้คงเหลือ · อำนาจสาขา'],['cBR','จำนวนราย · อำนาจสาขา','n'],['remBRp','% คงเหลือ สาขา / คงเหลือรวม','%'],['rem','มูลหนี้คงเหลือ · รวม'],
-  ['nplHQ','มูลหนี้เสีย · อำนาจ (HQ)'],['nHQ','จำนวนรายหนี้เสีย · อำนาจ (HQ)','n'],['pctHQ','% หนี้เสีย HQ / คงเหลือรวม','%'],['nplBR','มูลหนี้เสีย · อำนาจสาขา'],['nBR','จำนวนรายหนี้เสีย · อำนาจสาขา','n'],['pctBR','% หนี้เสีย สาขา / คงเหลือรวม','%'],['npl','มูลหนี้เสีย · รวม'],['pct','% หนี้เสีย / คงเหลือรวม','%'],['nplc','จำนวนรายที่มีหนี้เสีย','n']];
+  ['nplHQ','มูลหนี้เสีย · อำนาจ (HQ)'],['nHQ','จำนวนรายหนี้เสีย · อำนาจ (HQ)','n'],['pctHQ','% หนี้เสีย HQ / คงเหลือรวม','%'],['nplBR','มูลหนี้เสีย · อำนาจสาขา'],['nBR','จำนวนรายหนี้เสีย · อำนาจสาขา','n'],['pctBR','% หนี้เสีย สาขา / คงเหลือรวม','%'],['npl','มูลหนี้เสีย · รวม'],['nplc','จำนวนรายที่มีหนี้เสีย','n'],['pct','% หนี้เสีย / คงเหลือรวม','%']];
 const NPL_TONE=g=>/^(rem|cHQ|cBR)/.test(g)?'tr':/^pct/.test(g)?'tp':'tn';
 const PCT_SRC={pct:'npl',pctHQ:'nplHQ',pctBR:'nplBR',remHQp:'remHQ',remBRp:'remBR'};
 function nplCols(){ return D&&D.npl?NPL_COLS.filter(([g])=>!anaOff.has(g)):[]; }
