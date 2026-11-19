@@ -16,12 +16,12 @@
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     --bg:#0f1716; --surface:#172221; --ink:#e6efed; --muted:#9bb0ac; --line:#2a3b39;
-    --on-accent:#06201d; --accent:#4cc2b6; --accent-soft:#183a37; --warm:#f0a35a; --warm-soft:#3a2a17; --ok:#6fcf97; color-scheme:dark;
+    --s3:#b39ddb; --on-accent:#06201d; --accent:#4cc2b6; --accent-soft:#183a37; --warm:#f0a35a; --warm-soft:#3a2a17; --ok:#6fcf97; color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
   --bg:#0f1716; --surface:#172221; --ink:#e6efed; --muted:#9bb0ac; --line:#2a3b39;
-  --on-accent:#06201d; --accent:#4cc2b6; --accent-soft:#183a37; --warm:#f0a35a; --warm-soft:#3a2a17; --ok:#6fcf97; color-scheme:dark;
+  --s3:#b39ddb; --on-accent:#06201d; --accent:#4cc2b6; --accent-soft:#183a37; --warm:#f0a35a; --warm-soft:#3a2a17; --ok:#6fcf97; color-scheme:dark;
 }
 *{box-sizing:border-box}
 html,body{margin:0}
@@ -110,13 +110,13 @@ tr.detail td{background:var(--bg);padding:10px 14px 14px;white-space:normal}
 #ana td.over{color:var(--warm)}
 #anaCs td .a{display:block;font-size:11.5px;color:var(--muted)}
 #anaCs td.over{color:var(--warm)}
-:root[data-skin="light"]{--bg:#f4f6f5;--surface:#ffffff;--ink:#14201f;--muted:#5d6b69;--line:#d9e0de;--accent:#0b6b63;--accent-soft:#dcefec;--warm:#b45309;--warm-soft:#fbead6;--ok:#2f7d4f;--on-accent:#fff;color-scheme:light}
-:root[data-skin="dark"]{--bg:#0f1716;--surface:#172221;--ink:#e6efed;--muted:#9bb0ac;--line:#2a3b39;--accent:#4cc2b6;--accent-soft:#183a37;--warm:#f0a35a;--warm-soft:#3a2a17;--ok:#6fcf97;--on-accent:#06201d;color-scheme:dark}
-:root[data-skin="pink"]{--bg:#fdf2f6;--surface:#ffffff;--ink:#3b2530;--muted:#8a6a78;--line:#f1d5e0;--accent:#c2527a;--accent-soft:#fbdde8;--warm:#b9692a;--warm-soft:#fdebd6;--ok:#4f9a6a;--on-accent:#fff;color-scheme:light}
-:root[data-skin="mint"]{--bg:#eff9f4;--surface:#ffffff;--ink:#1f3a30;--muted:#5f8374;--line:#cfe8dc;--accent:#2f9a74;--accent-soft:#d5f1e4;--warm:#c0793a;--warm-soft:#fcebd5;--ok:#2f9a74;--on-accent:#fff;color-scheme:light}
-:root[data-skin="sky"]{--bg:#eff6fd;--surface:#ffffff;--ink:#1e3248;--muted:#617b95;--line:#d0e1f2;--accent:#3f7fc4;--accent-soft:#d9e9f9;--warm:#c27a3a;--warm-soft:#fcebd5;--ok:#3f9a78;--on-accent:#fff;color-scheme:light}
-:root[data-skin="lavender"]{--bg:#f5f2fc;--surface:#ffffff;--ink:#2c2540;--muted:#75698f;--line:#e0d8f2;--accent:#7a5cc4;--accent-soft:#e7defa;--warm:#c07a3c;--warm-soft:#fcebd5;--ok:#4f9a7a;--on-accent:#fff;color-scheme:light}
-:root[data-skin="peach"]{--bg:#fff5ee;--surface:#ffffff;--ink:#40291d;--muted:#94705c;--line:#f4dccb;--accent:#d9733f;--accent-soft:#fde2d1;--warm:#2f8a8a;--warm-soft:#d6efef;--ok:#4f9a6a;--on-accent:#fff;color-scheme:light}
+:root[data-skin="light"]{--s3:#7a5cc4;--bg:#f4f6f5;--surface:#ffffff;--ink:#14201f;--muted:#5d6b69;--line:#d9e0de;--accent:#0b6b63;--accent-soft:#dcefec;--warm:#b45309;--warm-soft:#fbead6;--ok:#2f7d4f;--on-accent:#fff;color-scheme:light}
+:root[data-skin="dark"]{--s3:#b39ddb;--bg:#0f1716;--surface:#172221;--ink:#e6efed;--muted:#9bb0ac;--line:#2a3b39;--accent:#4cc2b6;--accent-soft:#183a37;--warm:#f0a35a;--warm-soft:#3a2a17;--ok:#6fcf97;--on-accent:#06201d;color-scheme:dark}
+:root[data-skin="pink"]{--s3:#7d5bbf;--bg:#fdf2f6;--surface:#ffffff;--ink:#3b2530;--muted:#8a6a78;--line:#f1d5e0;--accent:#c2527a;--accent-soft:#fbdde8;--warm:#b9692a;--warm-soft:#fdebd6;--ok:#4f9a6a;--on-accent:#fff;color-scheme:light}
+:root[data-skin="mint"]{--s3:#6f5cc2;--bg:#eff9f4;--surface:#ffffff;--ink:#1f3a30;--muted:#5f8374;--line:#cfe8dc;--accent:#2f9a74;--accent-soft:#d5f1e4;--warm:#c0793a;--warm-soft:#fcebd5;--ok:#2f9a74;--on-accent:#fff;color-scheme:light}
+:root[data-skin="sky"]{--s3:#8a5bb8;--bg:#eff6fd;--surface:#ffffff;--ink:#1e3248;--muted:#617b95;--line:#d0e1f2;--accent:#3f7fc4;--accent-soft:#d9e9f9;--warm:#c27a3a;--warm-soft:#fcebd5;--ok:#3f9a78;--on-accent:#fff;color-scheme:light}
+:root[data-skin="lavender"]{--s3:#c2527a;--bg:#f5f2fc;--surface:#ffffff;--ink:#2c2540;--muted:#75698f;--line:#e0d8f2;--accent:#7a5cc4;--accent-soft:#e7defa;--warm:#c07a3c;--warm-soft:#fcebd5;--ok:#4f9a7a;--on-accent:#fff;color-scheme:light}
+:root[data-skin="peach"]{--s3:#6f5cc2;--bg:#fff5ee;--surface:#ffffff;--ink:#40291d;--muted:#94705c;--line:#f4dccb;--accent:#d9733f;--accent-soft:#fde2d1;--warm:#2f8a8a;--warm-soft:#d6efef;--ok:#4f9a6a;--on-accent:#fff;color-scheme:light}
 .themebar{display:flex;gap:8px;align-items:center;margin-left:auto}.themebar select{width:auto}
 .hdr{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap}
 .chips{display:flex;flex-wrap:wrap;gap:6px 14px;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg)}
@@ -152,6 +152,36 @@ tr.detail td{background:var(--bg);padding:10px 14px 14px;white-space:normal}
 th.fz{z-index:3}
 .fz.fzl{box-shadow:inset -1px 0 0 var(--line),4px 0 6px -4px rgba(0,0,0,.18)}
 #anaTW,#anaCsTW{max-height:none}
+.pies{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
+.pcard{border:1px solid var(--line);border-radius:8px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:6px;background:var(--surface)}
+.pcard.main{grid-column:1/-1;flex-direction:row;flex-wrap:wrap;justify-content:center;gap:16px 28px}
+.pcard.main h3,.pcard.main .ptot{width:100%;text-align:center}
+.pcard h3{margin:0;font-size:14px}.ptot{font-size:12px;color:var(--muted)}
+.chartbox svg text.pl{fill:#fff}
+.plg{width:100%;max-width:420px;font-size:12px;border-collapse:collapse}
+.plg td{padding:3px 6px;border-bottom:1px solid var(--line);white-space:normal}
+.plg i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.plg th{font-size:11px;color:var(--muted);font-weight:500;padding:3px 6px;white-space:normal;position:static;box-shadow:none;border-bottom:1px solid var(--line)}
+.plg tr.tot td{font-weight:600}
+.plg td.r,.plg th.r{text-align:right;white-space:nowrap}
+.pies{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+@media(max-width:900px){.pies{grid-template-columns:1fr!important}}
+.plg td:first-child{min-width:150px}
+#anaCs th,#ana th{white-space:normal;line-height:1.3;vertical-align:bottom;max-width:150px}
+#anaCs td,#ana td{padding:5px 8px}
+#anaCs th{padding:5px 8px}
+#anaCs,#ana{width:auto}
+th,th.r,#anaCs thead tr:first-child th,.plg th,.plg th.r{text-align:center!important}
+#anaCs th.npl.tr,#anaCs td.npl.tr{background:color-mix(in srgb,var(--accent) 9%,var(--surface))}
+#anaCs th.npl.tn,#anaCs td.npl.tn{background:color-mix(in srgb,var(--warm) 11%,var(--surface))}
+#anaCs th.npl.tp,#anaCs td.npl.tp{background:color-mix(in srgb,var(--s3) 14%,var(--surface));color:var(--s3);font-weight:600}
+#anaCs th.npl.tp{color:var(--muted);font-weight:500}
+#anaCs td.npl.tp.over{color:var(--s3)}
+#anaCs th.npl.tr+th.npl.tn,#anaCs td.npl.tr+td.npl.tn{border-left:2px solid var(--line)}
+table{border-collapse:separate!important;border-spacing:0}
+.chain{border-collapse:collapse!important}
+.fz{box-shadow:inset 0 -1px 0 var(--line)}
+.fz.fzl{box-shadow:inset 0 -1px 0 var(--line),inset -1px 0 0 var(--line),4px 0 6px -4px rgba(0,0,0,.18)}
 </style>
 </head>
 <body>
@@ -207,7 +237,7 @@ th.fz{z-index:3}
       <details class="cssd" open><summary class="lab" style="cursor:pointer;margin-top:12px">ชั้นที่แสดง <span id="csCount" class="hint"></span></summary>
         <div class="trow" style="margin:6px 0"><button id="csAll">เลือกทุกชั้น</button><button id="csOpen">เฉพาะชั้นที่ยังไม่ปิด</button><button id="csClosed">เฉพาะสถานะปิด</button><button id="csNone">ล้างที่เลือก</button></div>
         <div id="anaCsSel" class="csgroups"></div></details>
-      <div class="amtnote"><label for="anaAmt2">คอลัมน์ยอดเงินในตารางนี้ใช้</label><select id="anaAmt2"><option value="first">ยอดจัด+ประกัน ของสัญญาแรก (บาท)</option><option value="latest">ยอดจัด+ประกัน ของสัญญาล่าสุด (บาท)</option></select><span class="hint">สีส้ม = เกินเกณฑ์ · คอลัมน์พื้นสีอ่อน = มูลหนี้ (CostAndInsurenceNPL / EIRAgingRemainCostNPL ของสัญญาล่าสุด)</span></div>
+      <div class="amtnote"><label for="anaAmt2">คอลัมน์ยอดเงินในตารางนี้ใช้</label><select id="anaAmt2"><option value="first">ยอดจัด+ประกัน ของสัญญาแรก (บาท)</option><option value="latest">ยอดจัด+ประกัน ของสัญญาล่าสุด (บาท)</option></select><span class="hint">สีส้ม = เกินเกณฑ์ · คอลัมน์พื้นสีอ่อน = มูลหนี้ (CostAndInsurenceNPL / EIRAgingRemainCostNPL ของสัญญาล่าสุด) · อำนาจ HQ = เกินเกณฑ์ · อำนาจสาขา = ไม่เกินเกณฑ์ + จำนำทะเบียนเล่ม · % หนี้เสีย หารด้วยมูลหนี้คงเหลือรวมของชั้นที่เลือก</span></div>
       <div class="hint" id="nplSum" hidden style="margin-top:10px;font-size:13px;color:var(--ink)"></div><div class="vbar" data-a="2" style="margin-top:10px"></div><div class="tablewrap" id="anaCsTW" style="margin-top:8px"><table id="anaCs"></table></div><div class="chartbox" id="anaCsChart" hidden></div></div>
       <div class="hint" style="margin-top:6px">ประเภทสินเชื่อใช้ของสัญญาล่าสุด · Nano Finance และ Personal Unsecured Loan เกณฑ์ 20,000 บาท · ประเภทอื่นเกณฑ์ 55,000 บาท · "เกิน" คือมากกว่าเกณฑ์ ยอดเท่ากับเกณฑ์นับเป็น "ไม่เกิน" · สินเชื่อเงินด่วน (จำนำทะเบียนเล่ม) อนุมัติโดยสาขาทั้งหมด ไม่แยกตามเกณฑ์</div>
     </div>
@@ -591,7 +621,7 @@ function refresh(){
   const bn=basisNames(f.first), full=(f.o1<=0&&f.o2>=D.maxM);
   $('lab1').textContent='ช่วงเดือน'+bn[0]+' (ใช้แสดงและ export)'; $('lab2').textContent='ช่วงเดือน'+bn[1]+' (ไม่บังคับ)';
   if(f.asof){ $('lab1').textContent='ช่วงเดือนที่สัญญาแรกต้องอยู่ (ใช้แสดงและ export)'; $('lab2').textContent='ช่วงเดือนสัญญาล่าสุดที่แสดง (ไม่บังคับ)'; }
-  $('ch1').textContent='จำนวนสายสัญญา แยกตามเดือน'+(f.first?'สัญญาแรก':'เปิดล่าสุด');
+  $('ch1').textContent='จำนวนรายสัญญา แยกตามเดือน'+(f.first?'สัญญาแรก':'เปิดล่าสุด');
   $('period').innerHTML=S.search?`ผลการค้นหา “${esc($('q').value.trim())}”`:(f.asof?`แสดงข้อมูล สัญญาแรกอยู่ในช่วง <b>${mlabel(f.m1)}</b> ถึง <b>${mlabel(f.m2)}</b> · สัญญาล่าสุดนับถึงสิ้นช่วง (<b>${mlabel(f.m2)}</b>)`:`แสดงข้อมูล เดือน${bn[0]} <b>${mlabel(f.m1)}</b> ถึง <b>${mlabel(f.m2)}</b>`)+(full?'':` · เดือน${bn[1]} <b>${mlabel(f.o1)}</b> ถึง <b>${mlabel(f.o2)}</b>`);
   if(S.search){ $('note').innerHTML='เมื่อค้นหาเลขสัญญา ระบบไม่ใช้ตัวกรองอื่น ตัวกรองที่ตั้งไว้ตอนนี้ให้ผลกับสายที่ค้นเจอดังนี้<br>'+whyLines(f); }
   else $('note').textContent=(f.m1>f.m2||f.o1>f.o2?'ช่วงเดือนเริ่มต้นอยู่หลังเดือนสิ้นสุด':'');
@@ -606,9 +636,9 @@ function renderSummary(){
     const km=fl.first?m[root[i]]:m[i]; let e=mm.get(km); if(!e){e=[0,0];mm.set(km,e);} e[d>0?1:0]++;}
   const n=R.length;
   $('tiles').innerHTML=[
-    ['สายสัญญาที่แสดง',fmt(n),`สัญญาแรกไม่ซ้ำ ${fmt(roots.size)} สัญญา`],
-    ['สายที่ถูก ref แล้ว',fmt(ref),n?(ref/n*100).toFixed(1)+'% ของสายที่แสดง':'-'],
-    ['จำนวนครั้ง ref รวม',fmt(refTotal),n?'เฉลี่ย '+(refTotal/n).toFixed(2)+' ครั้ง/สาย':'-'],
+    ['จำนวนรายที่แสดง',fmt(n),`สัญญาแรกไม่ซ้ำ ${fmt(roots.size)} สัญญา`],
+    ['รายที่ถูก ref แล้ว',fmt(ref),n?(ref/n*100).toFixed(1)+'% ของรายที่แสดง':'-'],
+    ['จำนวนครั้ง ref รวม',fmt(refTotal),n?'เฉลี่ย '+(refTotal/n).toFixed(2)+' ครั้ง/ราย':'-'],
     ['ยอดจัด+ประกัน สัญญาแรกรวม',baht(sumCost),'บาท (นับสัญญาแรกไม่ซ้ำ)']
   ].map(t=>`<div class="tile"><div class="k">${t[0]}</div><div class="v">${t[1]}</div><div class="n">${t[2]}</div></div>`).join('');
   const lab=['0 (ไม่เคย ref)','1 ครั้ง','2 ครั้ง','3 ครั้ง','4 ครั้ง','5 ครั้งขึ้นไป'], mx=Math.max(1,...bins);
@@ -618,7 +648,7 @@ function renderSummary(){
   let mxv=1; for(const e of mm.values()) mxv=Math.max(mxv,e[0]+e[1]);
   let bars='',tk=''; const many=(b-a)>30;
   for(let i=a;i<=b;i++){const e=mm.get(i)||[0,0]; const h0=e[0]/mxv*100,h1=e[1]/mxv*100;
-    bars+=`<div class="c" title="${mlabel(i)}: ${fmt(e[0]+e[1])} สาย (ref แล้ว ${fmt(e[1])})"><div class="s1" style="height:${h1}%"></div><div class="s0" style="height:${h0}%"></div></div>`;
+    bars+=`<div class="c" title="${mlabel(i)}: ${fmt(e[0]+e[1])} ราย (ref แล้ว ${fmt(e[1])})"><div class="s1" style="height:${h1}%"></div><div class="s0" style="height:${h0}%"></div></div>`;
     tk+=`<span>${(!many||i%12===0)?(many?String(BASE_Y+Math.floor(i/12)):mlabel(i).slice(0,2)+'/'+String(BASE_Y+Math.floor(i/12)).slice(2)):''}</span>`;}
   $('monthly').innerHTML=bars; $('ticks').innerHTML=tk;
 }
@@ -650,7 +680,7 @@ function renderTable(){
   }
   if(!R.length) h=`<tr><td colspan="${COLS.length}" class="hint" style="padding:20px">ไม่พบสายสัญญาตามเงื่อนไขที่เลือก</td></tr>`;
   $('tbody').innerHTML=h; freezeCols($('tbl'),Math.min(2,cols().length));
-  $('tcount').textContent=`(${fmt(R.length)} สาย)`;
+  $('tcount').textContent=`(${fmt(R.length)} ราย)`;
   const pages=Math.max(1,Math.ceil(R.length/PAGE)); $('pg').textContent=`หน้า ${S.page+1} / ${fmt(pages)}`;
   $('prev').disabled=S.page===0; $('next').disabled=S.page+1>=pages;
 }
@@ -723,17 +753,20 @@ function renderAnalysis(){
   setTimeout(()=>drawAna(1),0);
   const rows=analysis(); $('anaPanel').hidden=!rows; if(!rows) return;
   const money=v=>v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
-  let h='<thead><tr><th>ประเภทสินเชื่อ</th><th class="r">เกณฑ์ (บาท)</th><th class="r">เกินเกณฑ์ (สาย)</th><th class="r">ยอดเกินเกณฑ์<br><span class="hint">'+amtLbl()+'</span></th><th class="r">ไม่เกินเกณฑ์ (สาย)</th><th class="r">ยอดไม่เกินเกณฑ์<br><span class="hint">'+amtLbl()+'</span></th><th class="r">รวม (สาย)</th><th class="r">ยอดรวม<br><span class="hint">'+amtLbl()+'</span></th><th class="r">% สายที่เกิน</th></tr></thead><tbody>';
+  let h='<thead><tr><th>ประเภทสินเชื่อ</th><th class="r">เกณฑ์ (บาท)</th><th class="r">เกินเกณฑ์ (ราย)</th><th class="r">ยอดเกินเกณฑ์<br><span class="hint">'+amtLbl()+'</span></th><th class="r">ไม่เกินเกณฑ์ (ราย)</th><th class="r">ยอดไม่เกินเกณฑ์<br><span class="hint">'+amtLbl()+'</span></th><th class="r">รวม (ราย)</th><th class="r">ยอดรวม<br><span class="hint">'+amtLbl()+'</span></th><th class="r">% รายที่เกิน</th></tr></thead><tbody>';
   for(const e of rows){ const n=e.oc+e.uc;
     if(e.branch){ h+=`<tr><td>${esc(e.name)}</td><td class="r">อนุมัติโดยสาขาทั้งหมด</td><td class="r">-</td><td class="r">-</td><td class="r">-</td><td class="r">-</td><td class="r">${fmt(n)}</td><td class="r">${money(e.us)}</td><td class="r">-</td></tr>`; continue; }
-    h+=`<tr class="${e.tot?'tot':e.sub?'sub':''}"><td>${esc(e.name)}</td><td class="r">${e.th?fmt(e.th):'-'}</td><td class="r over">${fmt(e.oc)}</td><td class="r over">${money(e.os)}</td><td class="r">${fmt(e.uc)}</td><td class="r">${money(e.us)}</td><td class="r">${fmt(n)}</td><td class="r">${money(e.os+e.us)}</td><td class="r">${n?(e.oc/n*100).toFixed(1)+'%':'-'}</td></tr>`; }
+    h+=`<tr class="${e.tot?'tot':e.sub?'sub':''}"><td>${esc(e.name)}</td><td class="r">${e.th?fmt(e.th):'-'}</td><td class="r over">${fmt(e.oc)}</td><td class="r over">${money(e.os)}</td><td class="r">${fmt(e.uc)}</td><td class="r">${money(e.us)}</td><td class="r">${fmt(n)}</td><td class="r">${money(e.os+e.us)}</td><td class="r">${n&&e.oc?(e.oc/n*100).toFixed(1)+'%':'-'}</td></tr>`; }
   $('ana').innerHTML=h+'</tbody>'; freezeCols($('ana'),1);
 }
 
 const CS_GROUPS=[['g20o','เกณฑ์ 20,000 · เกิน'],['g20u','เกณฑ์ 20,000 · ไม่เกิน'],['g55o','เกณฑ์ 55,000 · เกิน'],['g55u','เกณฑ์ 55,000 · ไม่เกิน'],['br','จำนำทะเบียนเล่ม (สาขา)'],['all','รวม']];
 let csOff=new Set(); try{ csOff=new Set(JSON.parse(localStorage.getItem('csOff')||'[]')); }catch(e){}
 function saveCsOff(){ try{localStorage.setItem('csOff',JSON.stringify([...csOff]));}catch(e){} }
-const NPL_COLS=[['rem','มูลหนี้คงเหลือ (CostAndInsurenceNPL)'],['npl','มูลหนี้เสีย (EIRAgingRemainCostNPL)'],['nplc','จำนวนสายที่มีหนี้เสีย'],['pct','% หนี้เสีย / มูลหนี้คงเหลือ']];
+const NPL_COLS=[['remHQ','มูลหนี้คงเหลือ · อำนาจ (HQ)'],['cHQ','จำนวนราย · อำนาจ (HQ)','n'],['remHQp','% คงเหลือ HQ / คงเหลือรวม','%'],['remBR','มูลหนี้คงเหลือ · อำนาจสาขา'],['cBR','จำนวนราย · อำนาจสาขา','n'],['remBRp','% คงเหลือ สาขา / คงเหลือรวม','%'],['rem','มูลหนี้คงเหลือ · รวม'],
+  ['nplHQ','มูลหนี้เสีย · อำนาจ (HQ)'],['nHQ','จำนวนรายหนี้เสีย · อำนาจ (HQ)','n'],['pctHQ','% หนี้เสีย HQ / คงเหลือรวม','%'],['nplBR','มูลหนี้เสีย · อำนาจสาขา'],['nBR','จำนวนรายหนี้เสีย · อำนาจสาขา','n'],['pctBR','% หนี้เสีย สาขา / คงเหลือรวม','%'],['npl','มูลหนี้เสีย · รวม'],['pct','% หนี้เสีย / คงเหลือรวม','%'],['nplc','จำนวนรายที่มีหนี้เสีย','n']];
+const NPL_TONE=g=>/^(rem|cHQ|cBR)/.test(g)?'tr':/^pct/.test(g)?'tp':'tn';
+const PCT_SRC={pct:'npl',pctHQ:'nplHQ',pctBR:'nplBR',remHQp:'remHQ',remBRp:'remBR'};
 function nplCols(){ return D&&D.npl?NPL_COLS.filter(([g])=>!anaOff.has(g)):[]; }
 let anaOff=new Set(); try{ anaOff=new Set(JSON.parse(localStorage.getItem('anaOff')||'[]')); }catch(e){}
 const csName=c=>c||'(ไม่ระบุ)', isClosedCs=c=>/^ปิด/.test(c);
@@ -754,31 +787,33 @@ const ANA_MODE_HEAD={cs:['ชั้น (ContractStatus)'],cs_ctn:['ชั้น 
 function analysisCs(){
   if(!D.ctn||!D.cs) return null;
   const mode=$('anaRow').value, by=new Map();
-  for(const i of S.rows){ if(csOff.size&&csOff.has(D.meta.cs[D.cs[i]]||'(ไม่ระบุ)')) continue; const [k1,k2]=anaKey(mode,i), key=k1+'\u0001'+k2; let e=by.get(key); if(!e){e={k1,k2,rem:0,npl:0,nplc:0};for(const [g] of CS_GROUPS)e[g]=[0,0];by.set(key,e);}
+  for(const i of S.rows){ if(csOff.size&&csOff.has(D.meta.cs[D.cs[i]]||'(ไม่ระบุ)')) continue; const [k1,k2]=anaKey(mode,i), key=k1+'\u0001'+k2; let e=by.get(key); if(!e){e={k1,k2,rem:0,npl:0,nplc:0,remHQ:0,remBR:0,nplHQ:0,nplBR:0,cHQ:0,cBR:0,nHQ:0,nBR:0};for(const [g] of CS_GROUPS)e[g]=[0,0];by.set(key,e);}
     const th=anaThreshold(D.meta.ctn[D.ctn[i]]||''), a=anaAmt(i); const g=th===null?'br':(th===20000?'g20':'g55')+(a>th?'o':'u');
-    e[g][0]++; e[g][1]+=a; e.all[0]++; e.all[1]+=a; if(D.npl){ e.rem+=D.rem[i]; e.npl+=D.npl[i]; if(D.npl[i]>0) e.nplc++; } }
+    e[g][0]++; e[g][1]+=a; e.all[0]++; e.all[1]+=a; if(D.npl){ const hq=th!==null&&a>th, s=hq?'HQ':'BR'; e.rem+=D.rem[i]; e.npl+=D.npl[i]; e['rem'+s]+=D.rem[i]; e['npl'+s]+=D.npl[i]; e['c'+s]++; if(D.npl[i]>0){ e.nplc++; e['n'+s]++; } } }
   const rows=[...by.values()].sort((a,b)=>a.k1<b.k1?-1:a.k1>b.k1?1:a.k2<b.k2?-1:a.k2>b.k2?1:0);
   const tot={k1:'รวมทั้งหมด',k2:'',tot:true}; for(const [g] of CS_GROUPS) tot[g]=[rows.reduce((s,r)=>s+r[g][0],0),rows.reduce((s,r)=>s+r[g][1],0)];
-  for(const k of ['rem','npl','nplc']) tot[k]=rows.reduce((s,r)=>s+r[k],0);
+  for(const k of ['rem','npl','nplc','remHQ','remBR','nplHQ','nplBR','cHQ','cBR','nHQ','nBR']) tot[k]=rows.reduce((s,r)=>s+r[k],0);
+  for(const r of rows) r.den=tot.rem; tot.den=tot.rem;
   rows.push(tot); return rows;
 }
 function renderAnalysisCs(){
   const rows=analysisCs(); $('anaCsWrap').hidden=!rows; if(!rows) return;
   const mode=$('anaRow').value, hd=ANA_MODE_HEAD[mode], two=hd.length>1, G=CS_GROUPS.filter(([g])=>!anaOff.has(g));
   const money=v=>v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
-  const NC=nplCols(); const nplCell=(r,g)=>g==='pct'?(r.rem?(r.npl/r.rem*100).toFixed(2)+'%':'-'):g==='nplc'?(r.nplc?fmt(r.nplc):'-'):(r[g]?money(r[g]):'-');
+  const NC=nplCols(); const nplCell=(r,g)=>PCT_SRC[g]?(r.den&&r[PCT_SRC[g]]?(r[PCT_SRC[g]]/r.den*100).toFixed(2)+'%':'-'):(g==='nplc'||g==='cHQ'||g==='cBR'||g==='nHQ'||g==='nBR')?(r[g]?fmt(r[g]):'-'):(r[g]?money(r[g]):'-');
   const al=amtLbl();
-  let h='<thead><tr>'+hd.map(t=>`<th rowspan="2" style="text-align:left">${t}</th>`).join('')+G.map(g=>`<th colspan="2" class="c">${g[1]}</th>`).join('')+NC.map(g=>`<th rowspan="2" class="r npl">${g[1]}</th>`).join('')+'</tr>'
-    +'<tr>'+G.map(()=>`<th class="r sub c">จำนวนสาย</th><th class="r sub">${al} (บาท)</th>`).join('')+'</tr></thead><tbody>';
+  let h='<thead><tr>'+hd.map(t=>`<th rowspan="2" style="text-align:left">${t}</th>`).join('')+G.map(g=>`<th colspan="2" class="c">${g[1]}</th>`).join('')+NC.map(g=>`<th rowspan="2" class="r npl ${NPL_TONE(g[0])}" title="${g[1]}">${g[2]==='%'?g[1].replace(/ \/ คงเหลือรวม$/,'').replace(/^% /,'%<br>'):g[1].replace(' · ','<br>')}</th>`).join('')+'</tr>'
+    +'<tr>'+G.map(()=>`<th class="r sub c">จำนวนราย</th><th class="r sub">${al} (บาท)</th>`).join('')+'</tr></thead><tbody>';
   let prev=null;
   for(const r of rows){ const first=r.k1!==prev; prev=r.k1;
     h+=`<tr class="${r.tot?'tot':''}"><td>${r.tot||first||!two?esc(r.k1):''}</td>${two?`<td>${r.tot?'':esc(r.k2)}</td>`:''}`
       +G.map(([g])=>{const ov=g.endsWith('o')&&r[g][0]?'over':''; return `<td class="r c ${ov}">${r[g][0]?fmt(r[g][0]):'-'}</td><td class="r ${ov}">${r[g][0]?money(r[g][1]):'-'}</td>`;}).join('')
-      +NC.map(([g])=>`<td class="r npl ${g==='pct'&&r.npl>0?'over':''}">${nplCell(r,g)}</td>`).join('')+'</tr>'; }
+      +NC.map(([g])=>`<td class="r npl ${NPL_TONE(g)} ${PCT_SRC[g]&&/npl/.test(PCT_SRC[g])&&r[PCT_SRC[g]]>0?'over':''}">${nplCell(r,g)}</td>`).join('')+'</tr>'; }
   $('anaCs').innerHTML=h+'</tbody>';
   freezeCols($('anaCs'),two?2:1);
   { const th=$('anaCs').tHead; const h1=th.rows[0].cells[th.rows[0].cells.length-1]; requestAnimationFrame(()=>{ const off=th.rows[0].querySelector('th.c')?th.rows[0].querySelector('th.c').offsetHeight:0; for(const c of th.rows[1].cells) c.style.top=off+'px'; }); }
-  const T=rows[rows.length-1]; $('nplSum').hidden=!D.npl; if(D.npl) $('nplSum').innerHTML=`ชั้นที่เลือก: มูลหนี้คงเหลือรวม <b>${money(T.rem)}</b> · มูลหนี้เสียรวม <b>${money(T.npl)}</b> (${fmt(T.nplc)} สาย) · คิดเป็น <b>${T.rem?(T.npl/T.rem*100).toFixed(2):'0.00'}%</b> ของมูลหนี้คงเหลือ`;
+  const T=rows[rows.length-1]; $('nplSum').hidden=!D.npl; const P=x=>T.rem?(x/T.rem*100).toFixed(2)+'%':'0.00%';
+  if(D.npl) $('nplSum').innerHTML=`ชั้นที่เลือก: มูลหนี้คงเหลือรวม <b>${money(T.rem)}</b> (HQ ${money(T.remHQ)} · สาขา ${money(T.remBR)}) · มูลหนี้เสียรวม <b>${money(T.npl)}</b> (${fmt(T.nplc)} ราย) = <b>${P(T.npl)}</b> ของมูลหนี้คงเหลือรวม · แยกเป็น HQ <b>${money(T.nplHQ)}</b> (${P(T.nplHQ)}) · สาขา <b>${money(T.nplBR)}</b> (${P(T.nplBR)})`;
   setTimeout(()=>drawAna(2),0);
 }
 // themes
@@ -813,10 +848,10 @@ function renderHead(COLS){
 })();
 
 // ---- charts for the two analysis tables ----
-const AV={1:{view:'table',metric:'n'},2:{view:'table',metric:'n'}};
+const AV={1:{view:'table',metric:'n'},2:{view:'table',metric:'n',pie:'cs',pm:'amt'}};
 try{ const s=JSON.parse(localStorage.getItem('anaView')||'null'); if(s){AV[1]=s[1]||AV[1];AV[2]=s[2]||AV[2];} }catch(e){}
 function vbarHtml(a){ const v=AV[a]; const b=(k,val,t)=>`<button data-a="${a}" data-k="${k}" data-v="${val}" aria-pressed="${v[k]===val}">${t}</button>`;
-  return `<span class="seg">${b('view','table','ตาราง')}${b('view','bar','กราฟแท่ง')}${b('view','line','กราฟเส้น')}</span>`+(v.view!=='table'?`<span class="seg">${b('metric','n','จำนวนสาย')}${b('metric','amt','ยอดเงิน')}${a===2&&D&&D.npl?b('metric','npl','มูลหนี้เสีย')+b('metric','pct','% หนี้เสีย'):''}</span>`:''); }
+  return `<span class="seg">${b('view','table','ตาราง')}${b('view','bar','กราฟแท่ง')}${b('view','line','กราฟเส้น')}${a===2&&D&&D.npl?b('view','pie','กราฟวงกลม หนี้เสีย'):''}</span>`+(v.view==='pie'?`<span class="seg">${b('pie','cs','แบ่งตามชั้น')}${b('pie','auth','แบ่งอำนาจ HQ / สาขา')}${b('pie','ctn','แบ่งตามประเภทสินเชื่อ')}</span><span class="seg">${b('pm','amt','มูลหนี้เสีย (บาท)')}${b('pm','n','จำนวนราย')}</span>`:'')+(v.view!=='table'&&v.view!=='pie'?`<span class="seg">${b('metric','n','จำนวนราย')}${b('metric','amt','ยอดเงิน')}${a===2&&D&&D.npl?b('metric','npl','มูลหนี้เสีย')+b('metric','pct','% หนี้เสีย'):''}</span>`:''); }
 function chartData(a){
   if(a===1){ const rows=(analysis()||[]).filter(r=>!r.sub&&!r.tot);
     return {cats:rows.map(r=>r.name),series:[
@@ -826,8 +861,8 @@ function chartData(a){
   const rows=(analysisCs()||[]).filter(r=>!r.tot), two=ANA_MODE_HEAD[$('anaRow').value].length>1;
   const cols={g20o:'var(--warm)',g20u:'var(--accent)',g55o:'var(--s5)',g55u:'var(--s4)',br:'var(--s3)',all:'var(--ink)'};
   const cats=rows.map(r=>two?r.k1+' · '+r.k2:r.k1);
-  if(AV[2].metric==='pct'&&D.npl) return {cats,unit:'%',series:[{name:'% หนี้เสีย / มูลหนี้คงเหลือ',color:'var(--warm)',v:rows.map(r=>r.rem?r.npl/r.rem*100:0)}]};
-  if(AV[2].metric==='npl'&&D.npl) return {cats,unit:'บาท',series:[{name:'มูลหนี้คงเหลือ',color:'var(--accent)',v:rows.map(r=>r.rem)},{name:'มูลหนี้เสีย',color:'var(--warm)',v:rows.map(r=>r.npl)}]};
+  if(AV[2].metric==='pct'&&D.npl) return {cats,unit:'%',series:[{name:'% หนี้เสีย HQ / คงเหลือรวม',color:'var(--warm)',v:rows.map(r=>r.den?r.nplHQ/r.den*100:0)},{name:'% หนี้เสีย สาขา / คงเหลือรวม',color:'var(--accent)',v:rows.map(r=>r.den?r.nplBR/r.den*100:0)}]};
+  if(AV[2].metric==='npl'&&D.npl) return {cats,unit:'บาท',series:[{name:'คงเหลือ อำนาจ HQ',color:'var(--s5)',v:rows.map(r=>r.remHQ)},{name:'คงเหลือ สาขา',color:'var(--s4)',v:rows.map(r=>r.remBR)},{name:'หนี้เสีย อำนาจ HQ',color:'var(--warm)',v:rows.map(r=>r.nplHQ)},{name:'หนี้เสีย สาขา',color:'var(--accent)',v:rows.map(r=>r.nplBR)}]};
   return {cats:rows.map(r=>two?r.k1+' · '+r.k2:r.k1),series:CS_GROUPS.filter(([g])=>!anaOff.has(g)).map(([g,n])=>({name:n,color:cols[g],v:rows.map(r=>AV[2].metric==='n'?r[g][0]:r[g][1])}))};
 }
 function niceMax(x){ if(x<=0) return 1; const p=Math.pow(10,Math.floor(Math.log10(x))), f=x/p; return (f<=1?1:f<=2?2:f<=2.5?2.5:f<=5?5:10)*p; }
@@ -841,7 +876,7 @@ function chartSvg(d,type,box,metric){
   let mx=0; for(const s of d.series) for(const v of s.v) if(v>mx) mx=v; mx=niceMax(mx);
   const y=v=>padT+ih-(v/mx)*ih; let g='';
   for(let t=0;t<=5;t++){ const v=mx*t/5, yy=y(v); g+=`<line x1="${padL}" x2="${W-padR}" y1="${yy}" y2="${yy}" stroke="var(--line)" stroke-width="1"/><text x="${padL-6}" y="${yy+3}" text-anchor="end">${d.unit==='%'?v.toFixed(v<10?1:0)+'%':shortNum(v)}</text>`; }
-  const fv=v=>d.unit==='%'?v.toFixed(2)+'%':metric==='n'?fmt(v)+' สาย':v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})+' บาท';
+  const fv=v=>d.unit==='%'?v.toFixed(2)+'%':metric==='n'?fmt(v)+' ราย':v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})+' บาท';
   if(type==='bar'){ const bw=Math.max(3,Math.min(18,(step-10)/S));
     d.series.forEach((s,k)=>{ s.v.forEach((v,i)=>{ if(!v) return; const x=padL+i*step+(step-bw*S)/2+k*bw;
       g+=`<rect x="${x.toFixed(1)}" y="${y(v).toFixed(1)}" width="${(bw-1).toFixed(1)}" height="${(padT+ih-y(v)).toFixed(1)}" fill="${s.color}" rx="1.5"><title>${esc(d.cats[i])}
@@ -852,13 +887,15 @@ ${esc(s.name)}: ${fv(v)}</title></rect>`; }); }); }
 ${esc(s.name)}: ${fv(s.v[i])}</title></circle>`; }); }); }
   d.cats.forEach((c,i)=>{ const x=padL+i*step+step/2, t=c.length>26?c.slice(0,25)+'…':c; g+=`<text transform="translate(${x.toFixed(1)},${padT+ih+12}) rotate(-40)" text-anchor="end">${esc(t)}<title>${esc(c)}</title></text>`; });
   g+=`<line x1="${padL}" x2="${W-padR}" y1="${padT+ih}" y2="${padT+ih}" stroke="var(--muted)" stroke-width="1"/>`;
-  const lg='<div class="lg">'+d.series.map(s=>`<span><i style="background:${s.color}"></i>${esc(s.name)}</span>`).join('')+`<span>หน่วย: ${d.unit||(metric==='n'?'จำนวนสาย':'บาท')}</span></div>`;
+  const lg='<div class="lg">'+d.series.map(s=>`<span><i style="background:${s.color}"></i>${esc(s.name)}</span>`).join('')+`<span>หน่วย: ${d.unit||(metric==='n'?'จำนวนราย':'บาท')}</span></div>`;
   return lg+`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="กราฟ">${g}</svg>`;
 }
 function drawAna(a){
   const bar=document.querySelector(`.vbar[data-a="${a}"]`); if(!bar) return; bar.innerHTML=vbarHtml(a);
   const tw=$(a===1?'anaTW':'anaCsTW'), cb=$(a===1?'anaChart':'anaCsChart'), v=AV[a]; if(a===2&&(v.metric==='npl'||v.metric==='pct')&&!(D&&D.npl)) v.metric='n';
+  if(v.view==='pie'&&!(D&&D.npl)) v.view='table';
   if(v.view==='table'){ tw.hidden=false; cb.hidden=true; return; }
+  if(v.view==='pie'){ tw.hidden=true; cb.hidden=false; cb.innerHTML=pieHtml(); return; }
   tw.hidden=true; cb.hidden=false; cb.innerHTML=chartSvg(chartData(a),v.view,cb,v.metric);
 }
 document.addEventListener('click',e=>{ const b=e.target.closest&&e.target.closest('.vbar button'); if(!b) return; const a=+b.dataset.a;
@@ -874,6 +911,47 @@ function freezeCols(tbl,n){
     for(const r of tbl.tBodies[0].rows){ if(r.cells.length<=n) continue; for(let k=0;k<n;k++) mark(r.cells[k],k); }
     if(tbl.tHead) for(const r of tbl.tHead.rows){ let k=0; for(const c of r.cells){ if(k>=n) break; if(c.rowSpan>1||r===tbl.tHead.rows[0]||r.classList.contains('cfrow')){ mark(c,k); k+=c.colSpan; } else break; } }
   });
+}
+
+// ---- pie charts: only chains with bad debt (EIRAgingRemainCostNPL > 0), one pie per region + all regions ----
+const PIE_COL=['#c2527a','#2f9a74','#3f7fc4','#d9733f','#7a5cc4','#b9a12a','#4fa3b5','#a0522d','#6b8e23','#8a6a78','#e08fb0','#5f7f9a'];
+function pieData(){
+  const v=AV[2]; v.pie=v.pie||'cs'; v.pm=v.pm||'amt';
+  const sliceOf=i=>{ if(v.pie==='auth'){ const th=anaThreshold(D.meta.ctn[D.ctn[i]]||''); return th!==null&&anaAmt(i)>th?'อำนาจ (HQ)':'อำนาจสาขา'; }
+    if(v.pie==='ctn') return D.meta.ctn[D.ctn[i]]||'(ไม่ระบุ)'; return D.meta.cs[D.cs[i]]||'(ไม่ระบุ)'; };
+  const mk=t=>({title:t,amt:new Map(),n:new Map(),rem:0,npl:0,cnt:0});
+  const all=mk(D.rg?'รวมทุกภาค':'รวม'); all.main=true; const groups=new Map(); const keys=new Set();
+  for(const i of S.rows){ const cs=D.meta.cs[D.cs[i]]||'(ไม่ระบุ)'; if(csOff.size&&csOff.has(cs)) continue;
+    const rg=D.rg?(D.meta.rg[D.rg[i]]||'(ไม่ระบุ)'):null; let G=null; if(rg){ G=groups.get(rg); if(!G){G=mk(rg);groups.set(rg,G);} }
+    for(const P of G?[all,G]:[all]){ P.rem+=D.rem[i]; }
+    if(!(D.npl[i]>0)) continue; const k=sliceOf(i); keys.add(k);
+    for(const P of G?[all,G]:[all]){ P.amt.set(k,(P.amt.get(k)||0)+D.npl[i]); P.n.set(k,(P.n.get(k)||0)+1); P.npl+=D.npl[i]; P.cnt++; } }
+  const order=[...keys].sort((a,b)=>(all.amt.get(b)||0)-(all.amt.get(a)||0)), color=new Map(order.map((k,j)=>[k,PIE_COL[j%PIE_COL.length]]));
+  const pies=[all].concat([...groups.values()].sort((a,b)=>a.title<b.title?-1:1));
+  for(const p of pies) p.m=v.pm==='n'?p.n:p.amt;
+  return {order,color,pies,unit:v.pm};
+}
+function pieCode(k){ const m=/^(\d{1,2})\s/.exec(k); if(m) return '('+m[1]+')'; if(/HQ/.test(k)) return 'HQ'; if(/สาขา/.test(k)) return 'สาขา'; return k.length>10?k.slice(0,9)+'…':k; }
+function pieSvg(m,order,color,size){
+  const tot=order.reduce((s,k)=>s+(m.get(k)||0),0), R=size/2-4, c=size/2; if(!tot) return `<svg width="${size}" height="${size}"></svg>`;
+  let a0=-Math.PI/2, g='';
+  for(const k of order){ const v=m.get(k)||0; if(!v) continue; const f=v/tot, a1=a0+f*2*Math.PI;
+    const p=(a,r)=>[c+r*Math.cos(a),c+r*Math.sin(a)], [x0,y0]=p(a0,R), [x1,y1]=p(a1,R);
+    const path=f>=0.9999?`M${c-R},${c}a${R},${R} 0 1,0 ${2*R},0a${R},${R} 0 1,0 ${-2*R},0`:`M${c},${c}L${x0.toFixed(2)},${y0.toFixed(2)}A${R},${R} 0 ${f>0.5?1:0},1 ${x1.toFixed(2)},${y1.toFixed(2)}Z`;
+    g+=`<path d="${path}" fill="${color.get(k)}" stroke="var(--surface)" stroke-width="1.5"><title>${esc(k)}: ${(f*100).toFixed(1)}%</title></path>`;
+    if(f>=0.05){ const [lx,ly]=p((a0+a1)/2,R*0.64); const fs=size>260?13:11; g+=`<text x="${lx.toFixed(1)}" y="${(ly-fs*0.6).toFixed(1)}" text-anchor="middle" dominant-baseline="middle" style="fill:#fff;font-weight:600;font-size:${fs-1}px">${esc(pieCode(k))}</text><text x="${lx.toFixed(1)}" y="${(ly+fs*0.6).toFixed(1)}" text-anchor="middle" dominant-baseline="middle" style="fill:#fff;font-weight:600;font-size:${fs}px">${(f*100).toFixed(1)}%</text>`; }
+    a0=a1; }
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">${g}</svg>`;
+}
+function pieHtml(){
+  const P=pieData(); if(!P.order.length) return '<div class="hint">ไม่มีสายที่มีมูลหนี้เสียในตัวกรองและชั้นที่เลือก</div>';
+  const money=v=>v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}), pc=(a,b)=>b?(a/b*100).toFixed(2)+'%':'-';
+  const card=p=>{
+    const rows=P.order.filter(k=>p.n.get(k)).map(k=>`<tr><td><i style="background:${P.color.get(k)}"></i>${esc(k)}</td><td class="r">${money(p.amt.get(k)||0)}</td><td class="r">${fmt(p.n.get(k)||0)}</td><td class="r">${pc(P.unit==='n'?p.n.get(k):p.amt.get(k),P.unit==='n'?p.cnt:p.npl)}</td><td class="r">${pc(p.amt.get(k)||0,p.rem)}</td></tr>`).join('');
+    const head=`<thead><tr><th></th><th class="r">มูลหนี้เสีย (บาท)</th><th class="r">จำนวน (ราย)</th><th class="r">% ของ${P.unit==='n'?'จำนวนราย':'หนี้เสีย'}</th><th class="r">% ของมูลหนี้<br>คงเหลือ${p.main?'รวม':'ภาค'}</th></tr></thead>`;
+    const foot=`<tr class="tot"><td>รวม</td><td class="r">${money(p.npl)}</td><td class="r">${fmt(p.cnt)}</td><td class="r">100%</td><td class="r">${pc(p.npl,p.rem)}</td></tr>`;
+    return `<div class="pcard ${p.main?'main':''}"><h3>${esc(p.title)}</h3><div class="ptot">มูลหนี้เสีย <b>${money(p.npl)}</b> (${fmt(p.cnt)} ราย) = <b>${pc(p.npl,p.rem)}</b> ของมูลหนี้คงเหลือ${p.main?'รวม':'ของภาค'} ${money(p.rem)}</div>${pieSvg(p.m,P.order,P.color,p.main?280:200)}<table class="plg">${head}<tbody>${rows}${foot}</tbody></table></div>`; };
+  return `<div class="hint" style="margin-bottom:8px">เฉพาะสายที่มีมูลหนี้เสีย (EIRAgingRemainCostNPL มากกว่า 0) ตามตัวกรองและชั้นที่เลือก · ขนาดชิ้นตาม${P.unit==='n'?'จำนวนราย':'มูลหนี้เสีย'} · % ในวง = สัดส่วนของ${P.unit==='n'?'จำนวนรายที่มีหนี้เสีย':'มูลหนี้เสีย'} · มูลหนี้คงเหลือ = CostAndInsurenceNPL ของทุกสายในชั้นที่เลือก · 1 ราย = สัญญาปัจจุบัน 1 สัญญา (รวมสัญญาก่อนหน้าที่ ref มา)</div><div class="pies">${P.pies.map(card).join('')}</div>`;
 }
 /* ---------- Excel export (minimal xlsx writer) ---------- */
 const CRC=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0;}return t;})();
@@ -959,11 +1037,11 @@ async function doExport(){
     const crit=[['แหล่งข้อมูล',S.source+' (ถึงเดือน '+mlabel(D.maxM)+')'],['ช่วงที่แสดง/export',S.search?('ค้นหาเลขสัญญา: '+$('q').value.trim()):(f.asof?'สัญญาแรกอยู่ในช่วง '+mlabel(f.f1)+' ถึง '+mlabel(f.f2)+' | สัญญาล่าสุด = สัญญาล่าสุดของสายที่เปิดไม่เกินเดือน '+mlabel(f.f2)+' (สัญญาที่ ref ต่อหลังจากนั้นแยกไว้ในคอลัมน์ ref ต่อหลังสิ้นช่วง)':'เดือนสัญญาแรก '+mlabel(f.f1)+' ถึง '+mlabel(f.f2)+' | เดือนเปิดล่าสุด '+mlabel(f.l1)+' ถึง '+mlabel(f.l2)+' (ช่วงหลักอิงตาม'+(f.first?'สัญญาแรก':'สัญญาล่าสุด')+')')],['จำนวนครั้ง ref',$('depth').selectedOptions[0].text],['ประเภทสัญญาล่าสุด',S.search?'-':typeLabel()],['ประเภทสินเชื่อ (NL_ContractTypeName)',S.search?'-':ctnLabel()],['สถานะการปิด',$('status').selectedOptions[0].text],['สถานะการชำระปัจจุบัน',D.cs?$('cstat').selectedOptions[0].text:'(ไม่มีในข้อมูล)'],['สาขา',$('branch').selectedOptions[0].text],['ค้นหารายคอลัมน์',activeColF().length?activeColF().map(([id,v])=>{const c=TBL.find(x=>x[0]===id);return (c?c[1]:id)+' มีคำว่า "'+v+'"';}).join(', '):'-'],['ภาค (NL_RegionName)',D.rg?$('region').selectedOptions[0].text:'(ไม่มีในข้อมูล)'],
       ['การเชื่อมสายสัญญา',$('link').selectedOptions[0].text],['จำนวนสายสัญญา',R.length],['หมายเหตุ','1 แถว = 1 สายสัญญา (นับจากสัญญาล่าสุด) · คอลัมน์ ครั้งที่ k = สัญญาก่อนหน้าที่ถูก ref (ครั้งที่ 1 = สัญญาแรก) ไม่รวมสัญญาปัจจุบัน ซึ่งอยู่ในคอลัมน์ สัญญาล่าสุด แล้ว · วันที่ ref = '+(D.ct?'วันทำสัญญา (NL_ContractDate) ของสัญญานั้น':'วันที่ปิดของสัญญาก่อนหน้า (ไฟล์นี้ไม่มี NL_ContractDate จึงไม่มีวันที่ของครั้งที่ 1)')+' · ยอดจัด+ประกันในชีตสรุปใช้ของสัญญาแรก']];
         const x1=sheetXml(head1,rows1,w1), x2=sheetXml(head2,rows2,w2), x3=sheetXml(['เงื่อนไข','ค่า'],crit,[24,100]);
-    const AR=analysis()||[]; const r2=v=>({n:Math.round(v*100)/100}); const x4=sheetXml(['ประเภทสินเชื่อ','เกณฑ์ (บาท)','เกินเกณฑ์ (สาย)','ยอดเกินเกณฑ์','ไม่เกินเกณฑ์ (สาย)','ยอดไม่เกินเกณฑ์','รวม (สาย)','ยอดรวม'],
+    const AR=analysis()||[]; const r2=v=>({n:Math.round(v*100)/100}); const x4=sheetXml(['ประเภทสินเชื่อ','เกณฑ์ (บาท)','เกินเกณฑ์ (ราย)','ยอดเกินเกณฑ์','ไม่เกินเกณฑ์ (ราย)','ยอดไม่เกินเกณฑ์','รวม (ราย)','ยอดรวม'],
       AR.map(a=>a.branch?[a.name,'อนุมัติโดยสาขาทั้งหมด','','','','',a.oc+a.uc,r2(a.us)]:[a.name,a.th?a.th:'',a.oc,r2(a.os),a.uc,r2(a.us),a.oc+a.uc,r2(a.os+a.us)]).concat([[],['ยอดที่ใช้: '+$('anaAmt').selectedOptions[0].text+' · ประเภทสินเชื่อของสัญญาล่าสุด · เกิน = มากกว่าเกณฑ์']]),[36,22,16,18,18,18,12,18]);
     const enc=new TextEncoder();
-    const CR=analysisCs(); const _hd=ANA_MODE_HEAD[$('anaRow').value], _G=CS_GROUPS.filter(([g])=>!anaOff.has(g)); const hdr5=_hd.slice(); for(const [,n] of _G) hdr5.push(n+' (จำนวนสาย)',n+' ('+amtLbl()+')'); const _N=nplCols(); for(const [,n] of _N) hdr5.push(n);
-    const x5=sheetXml(hdr5,(CR||[]).map(r=>{const o=[r.k1]; if(_hd.length>1) o.push(r.tot?'':r.k2); for(const [g] of _G) o.push(r[g][0],r2(r[g][1])); for(const [g] of _N) o.push(g==='pct'?(r.rem?{n:Math.round(r.npl/r.rem*10000)/100}:''):g==='nplc'?r.nplc:r2(r[g])); return o;}).concat([[],['แยกแถวตาม: '+$('anaRow').selectedOptions[0].text+' · ชั้นที่ไม่แสดง: '+(csOff.size?[...csOff].join(', '):'-')+' · ยอดที่ใช้: '+$('anaAmt').selectedOptions[0].text+' · ชั้น = ContractStatus ของสัญญาล่าสุด']]),[30,26].concat(Array(12).fill(16)));
+    const CR=analysisCs(); const _hd=ANA_MODE_HEAD[$('anaRow').value], _G=CS_GROUPS.filter(([g])=>!anaOff.has(g)); const hdr5=_hd.slice(); for(const [,n] of _G) hdr5.push(n+' (จำนวนราย)',n+' ('+amtLbl()+')'); const _N=nplCols(); for(const [,n] of _N) hdr5.push(n);
+    const x5=sheetXml(hdr5,(CR||[]).map(r=>{const o=[r.k1]; if(_hd.length>1) o.push(r.tot?'':r.k2); for(const [g] of _G) o.push(r[g][0],r2(r[g][1])); for(const [g] of _N) o.push(PCT_SRC[g]?(r.den&&r[PCT_SRC[g]]?{n:Math.round(r[PCT_SRC[g]]/r.den*10000)/100}:''):(g==='nplc'||g==='cHQ'||g==='cBR'||g==='nHQ'||g==='nBR')?r[g]:r2(r[g])); return o;}).concat([[],['แยกแถวตาม: '+$('anaRow').selectedOptions[0].text+' · ชั้นที่ไม่แสดง: '+(csOff.size?[...csOff].join(', '):'-')+' · ยอดที่ใช้: '+$('anaAmt').selectedOptions[0].text+' · ชั้น = ContractStatus ของสัญญาล่าสุด · อำนาจ HQ = เกินเกณฑ์ (อนุมัติ HQ), สาขา = ไม่เกินเกณฑ์ + จำนำทะเบียนเล่ม · % หนี้เสีย = มูลหนี้เสียของแถว / มูลหนี้คงเหลือรวมของชั้นที่เลือก']]),[30,26].concat(Array(12).fill(16)));
     const wb='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="สายสัญญา" sheetId="1" r:id="rId1"/><sheet name="รายละเอียดแต่ละทอด" sheetId="2" r:id="rId2"/><sheet name="วิเคราะห์ยอดตามเกณฑ์" sheetId="4" r:id="rId5"/><sheet name="วิเคราะห์ตามชั้น" sheetId="5" r:id="rId6"/><sheet name="เงื่อนไข" sheetId="3" r:id="rId3"/></sheets></workbook>';
     const rel=(i,t,tg)=>`<Relationship Id="rId${i}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/${t}" Target="${tg}"/>`;
     const files=[
@@ -976,7 +1054,7 @@ async function doExport(){
     const blob=await makeZip(files);
     const tag=S.search?'search':((f.asof?'asof_':f.first?'first_':'latest_')+mlabel(f.m1)+'_to_'+mlabel(f.m2));
     await save({filename:`refinance_chain_${tag}.xlsx`,data:blob});
-    $('note').textContent=`สร้างไฟล์แล้ว ${fmt(R.length)} สาย`;
+    $('note').textContent=`สร้างไฟล์แล้ว ${fmt(R.length)} ราย`;
   }catch(err){
     $('note').textContent=(err&&err.code==='declined')?'ยกเลิกการบันทึกไฟล์':'สร้างไฟล์ไม่สำเร็จ: '+((err&&err.message)||err);
   }finally{btn.disabled=false;btn.textContent='Export Excel';}
