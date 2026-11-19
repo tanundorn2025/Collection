@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ติดตามสายสัญญา Refinance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* layout: sticky filter bar over summary tiles, two charts, then a wide scrolling table with expandable chain rows */
+:root{
+  --bg:#f4f6f5; --surface:#ffffff; --ink:#14201f; --muted:#5d6b69; --line:#d9e0de;
+  --on-accent:#fff; --accent:#0b6b63; --accent-soft:#dcefec; --warm:#b45309; --warm-soft:#fbead6; --ok:#2f7d4f;
+  --font:'IBM Plex Sans Thai',system-ui,sans-serif; --mono:'IBM Plex Mono',ui-monospace,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f1716; --surface:#172221; --ink:#e6efed; --muted:#9bb0ac; --line:#2a3b39;
+    --on-accent:#06201d; --accent:#4cc2b6; --accent-soft:#183a37; --warm:#f0a35a; --warm-soft:#3a2a17; --ok:#6fcf97; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f1716; --surface:#172221; --ink:#e6efed; --muted:#9bb0ac; --line:#2a3b39;
+  --on-accent:#06201d; --accent:#4cc2b6; --accent-soft:#183a37; --warm:#f0a35a; --warm-soft:#3a2a17; --ok:#6fcf97; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:14px/1.5 var(--font);padding:20px 16px 48px}
+.wrap{max-width:1400px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-size:22px;margin:0;text-wrap:balance;font-weight:600}
+.sub{color:var(--muted);margin:2px 0 0}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px}
+.filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:14px 18px;align-items:end}
+.f label,.f .lab{display:block;font-size:12px;color:var(--muted);margin-bottom:4px;font-weight:500}
+.f .row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.f .row select{width:auto;flex:1 1 76px;min-width:76px;padding-right:4px}
+.f .row select[id$='y1'],.f .row select[id$='y2'],.f .row select[id*='yF']{flex-basis:84px;min-width:84px}
+select,input[type=text]{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:6px 8px;min-width:0;width:100%}
+select:focus,input:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.f .sep{color:var(--muted);font-size:12px;white-space:nowrap}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:6px;padding:6px 12px}
+button:hover{border-color:var(--accent)}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent);font-weight:500}
+button:disabled{opacity:.5;cursor:default}
+.period{font-weight:500}
+.period b{color:var(--accent)}
+.spacer{flex:1}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.tile .k{font-size:12px;color:var(--muted)}
+.tile .v{font-size:26px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.2;margin-top:2px}
+.tile .n{font-size:12px;color:var(--muted);margin-top:2px}
+.charts{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:16px}
+@media(max-width:900px){.charts{grid-template-columns:1fr}}
+h2{font-size:14px;margin:0 0 10px;font-weight:600}
+.monthly{display:flex;align-items:flex-end;gap:2px;height:150px;border-bottom:1px solid var(--line)}
+.monthly .c{flex:1;min-width:1px;display:flex;flex-direction:column;justify-content:flex-end;height:100%}
+.monthly .s0{background:var(--accent)} .monthly .s1{background:var(--warm)}
+.ticks{display:flex;gap:2px;height:16px;font-size:10px;color:var(--muted);margin-top:3px;overflow:hidden}
+.ticks span{flex:1;min-width:1px;white-space:nowrap;overflow:visible}
+.legend{display:flex;gap:14px;font-size:12px;color:var(--muted);margin-top:8px;flex-wrap:wrap}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.dist{display:flex;flex-direction:column;gap:6px}
+.dist .r{display:grid;grid-template-columns:100px 1fr 110px;gap:8px;align-items:center;font-size:12.5px}
+.dist .t{background:var(--accent-soft);border-radius:4px;height:16px;position:relative}
+.dist .t i{position:absolute;left:0;top:0;bottom:0;background:var(--accent);border-radius:4px}
+.dist .r:nth-child(n+2) .t i{background:var(--warm)} .dist .r:nth-child(n+2) .t{background:var(--warm-soft)}
+.dist .num{text-align:right;font-variant-numeric:tabular-nums;color:var(--muted)}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px}
+table{border-collapse:collapse;width:100%;font-size:13px;font-variant-numeric:tabular-nums}
+th,td{padding:7px 10px;text-align:left;white-space:nowrap;border-bottom:1px solid var(--line)}
+th{position:sticky;top:0;background:var(--surface);font-size:12px;color:var(--muted);font-weight:500;user-select:none}
+th.sortable{cursor:pointer} th.sortable:hover{color:var(--accent)}
+th .ar{color:var(--accent)}
+td.mono,.mono{font-family:var(--mono);font-size:12.5px}
+td.r,th.r{text-align:right}
+tr.main{cursor:pointer} tr.main:hover td{background:var(--accent-soft)}
+tr.main.open td{background:var(--accent-soft)}
+.pill{display:inline-block;min-width:26px;text-align:center;padding:1px 8px;border-radius:99px;font-weight:600;font-size:12px;background:var(--accent-soft);color:var(--accent)}
+.pill.w{background:var(--warm-soft);color:var(--warm)}
+.st{font-size:12px;padding:1px 7px;border-radius:4px;border:1px solid var(--line)}
+.st.act{border-color:var(--ok);color:var(--ok)}
+tr.detail td{background:var(--bg);padding:10px 14px 14px;white-space:normal}
+.chain{width:auto;min-width:640px;background:var(--surface);border:1px solid var(--line)}
+.chain td,.chain th{padding:5px 10px}
+.chain tr:last-child td{border-bottom:0}
+.hint{color:var(--muted);font-size:12px}
+.pager{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap}
+.warn{color:var(--warm);font-size:12px}
+#load{padding:40px 16px;text-align:center;color:var(--muted)}
+#load.err{color:var(--warm)}
+.prog{height:6px;background:var(--line);border-radius:3px;max-width:320px;margin:12px auto 0;overflow:hidden}
+.prog i{display:block;height:100%;width:30%;background:var(--accent);animation:p 1.1s infinite ease-in-out}
+@keyframes p{0%{margin-left:-30%}100%{margin-left:100%}}
+@media (prefers-reduced-motion:reduce){.prog i{animation:none;width:100%}}
+.types{margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.types .lab{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:500}
+.tbox{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:4px 18px;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg)}
+.tbox label{display:flex;gap:8px;align-items:center;cursor:pointer;font-size:13px;color:var(--ink)}
+.tbox input{accent-color:var(--accent);width:15px;height:15px;margin:0}
+.trow{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.upl{margin-top:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.upl input[type=file]{display:none}
+#ustat{font-size:12px;color:var(--muted)}
+.anahead{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+.anahead h2{margin:0}.anahead .f{min-width:220px}
+#ana tr.sub td{font-weight:600;background:var(--accent-soft)}
+#ana tr.tot td{font-weight:600;border-top:2px solid var(--line)}
+#ana td.over{color:var(--warm)}
+#anaCs td .a{display:block;font-size:11.5px;color:var(--muted)}
+#anaCs td.over{color:var(--warm)}
+:root[data-skin="light"]{--bg:#f4f6f5;--surface:#ffffff;--ink:#14201f;--muted:#5d6b69;--line:#d9e0de;--accent:#0b6b63;--accent-soft:#dcefec;--warm:#b45309;--warm-soft:#fbead6;--ok:#2f7d4f;--on-accent:#fff;color-scheme:light}
+:root[data-skin="dark"]{--bg:#0f1716;--surface:#172221;--ink:#e6efed;--muted:#9bb0ac;--line:#2a3b39;--accent:#4cc2b6;--accent-soft:#183a37;--warm:#f0a35a;--warm-soft:#3a2a17;--ok:#6fcf97;--on-accent:#06201d;color-scheme:dark}
+:root[data-skin="pink"]{--bg:#fdf2f6;--surface:#ffffff;--ink:#3b2530;--muted:#8a6a78;--line:#f1d5e0;--accent:#c2527a;--accent-soft:#fbdde8;--warm:#b9692a;--warm-soft:#fdebd6;--ok:#4f9a6a;--on-accent:#fff;color-scheme:light}
+:root[data-skin="mint"]{--bg:#eff9f4;--surface:#ffffff;--ink:#1f3a30;--muted:#5f8374;--line:#cfe8dc;--accent:#2f9a74;--accent-soft:#d5f1e4;--warm:#c0793a;--warm-soft:#fcebd5;--ok:#2f9a74;--on-accent:#fff;color-scheme:light}
+:root[data-skin="sky"]{--bg:#eff6fd;--surface:#ffffff;--ink:#1e3248;--muted:#617b95;--line:#d0e1f2;--accent:#3f7fc4;--accent-soft:#d9e9f9;--warm:#c27a3a;--warm-soft:#fcebd5;--ok:#3f9a78;--on-accent:#fff;color-scheme:light}
+:root[data-skin="lavender"]{--bg:#f5f2fc;--surface:#ffffff;--ink:#2c2540;--muted:#75698f;--line:#e0d8f2;--accent:#7a5cc4;--accent-soft:#e7defa;--warm:#c07a3c;--warm-soft:#fcebd5;--ok:#4f9a7a;--on-accent:#fff;color-scheme:light}
+:root[data-skin="peach"]{--bg:#fff5ee;--surface:#ffffff;--ink:#40291d;--muted:#94705c;--line:#f4dccb;--accent:#d9733f;--accent-soft:#fde2d1;--warm:#2f8a8a;--warm-soft:#d6efef;--ok:#4f9a6a;--on-accent:#fff;color-scheme:light}
+.themebar{display:flex;gap:8px;align-items:center;margin-left:auto}.themebar select{width:auto}
+.hdr{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap}
+.chips{display:flex;flex-wrap:wrap;gap:6px 14px;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg)}
+.chips label{display:flex;gap:6px;align-items:center;font-size:12.5px;cursor:pointer;margin:0;color:var(--ink)}
+.chips input{accent-color:var(--accent);margin:0}
+.cfg{margin-top:10px;display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start}
+.cfg>div{flex:1 1 260px}
+.cfg .lab{display:block;font-size:12px;color:var(--muted);margin-bottom:4px;font-weight:500}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="hdr"><div><h1>ติดตามสายสัญญา Refinance</h1>
+    <p class="sub" id="sub">ดูว่าแต่ละสัญญาถูก ref ต่อกันมากี่ทอด และแต่ละทอดทำสัญญาวันที่เท่าไหร่</p></div><div class="themebar"><label for="skin" class="hint">ธีม</label><select id="skin"><option value="auto">ตามเครื่อง</option><option value="light">สว่าง</option><option value="dark">มืด</option><option value="pink">พาสเทล ชมพู</option><option value="mint">พาสเทล มิ้นต์</option><option value="sky">พาสเทล ฟ้า</option><option value="lavender">พาสเทล ลาเวนเดอร์</option><option value="peach">พาสเทล พีช</option></select></div></div>
+    <div class="upl top"><button class="primary" id="upBtn">อัปโหลดข้อมูลเดือนใหม่ (.xlsx / .csv)</button><input id="upFile" type="file" accept=".xlsx,.csv"><span id="ustat">ไฟล์ต้องรวมสัญญาทั้งหมด หัวคอลัมน์เหมือนไฟล์เดิม (NL_ContractDate และ ContractStatus ไม่บังคับ) ไฟล์อ่านในเบราว์เซอร์เท่านั้น ไม่ถูกส่งไปที่อื่น</span></div>
+  </header>
+  <div id="load" class="panel">ยังไม่มีข้อมูล กดปุ่ม "อัปโหลดข้อมูลเดือนใหม่" ด้านบนเพื่อเลือกไฟล์ .xlsx หรือ .csv หลังรีเฟรชหน้าต้องอัปโหลดใหม่ทุกครั้ง</div>
+  <div id="app" hidden>
+    <div class="panel">
+      <div class="filters">
+        <div class="f"><label for="link">การเชื่อมสายสัญญา</label><select id="link"><option value="restr">เฉพาะปรับปรุงโครงสร้างหนี้ (รีไฟแนนซ์/สัญญาใหม่ เริ่มสายใหม่)</option><option value="all">ทุกประเภทที่ ref</option></select></div>
+        <div class="f"><label for="basis">ช่วงเวลาที่เลือกอิงตามเดือนของ</label><select id="basis"><option value="asof">สัญญาแรกอยู่ในช่วง และแสดงสัญญาล่าสุด ณ สิ้นช่วง (แนะนำ)</option><option value="first">สัญญาแรก (แสดงสัญญาล่าสุดจริงของสาย)</option><option value="latest">สัญญาล่าสุด (เดือนเปิดล่าสุด)</option></select></div>
+        <div class="f"><span class="lab" id="lab1">ช่วงเดือนสัญญาแรก (ใช้แสดงและ export)</span>
+          <div class="row"><select id="lmF1" aria-label="เดือนเริ่ม"></select><select id="lyF1" aria-label="ปีเริ่ม"></select><span class="sep">ถึง</span><select id="lmF2" aria-label="เดือนสิ้นสุด"></select><select id="lyF2" aria-label="ปีสิ้นสุด"></select></div></div>
+        <div class="f"><span class="lab" id="lab2">ช่วงเดือนสัญญาล่าสุด (ไม่บังคับ)</span>
+          <div class="row"><select id="fmF1" aria-label="เดือนเริ่มสัญญาแรก"></select><select id="fyF1" aria-label="ปีเริ่มสัญญาแรก"></select><span class="sep">ถึง</span><select id="fmF2" aria-label="เดือนสิ้นสุดสัญญาแรก"></select><select id="fyF2" aria-label="ปีสิ้นสุดสัญญาแรก"></select></div></div>
+        <div class="f"><label for="depth">จำนวนครั้งที่ ref</label>
+          <select id="depth"><option value="all">ทั้งหมด</option><option value="0">0 (ไม่เคย ref)</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5 ขึ้นไป</option></select></div>
+        <div class="f"><label for="status">สถานะการปิด (สัญญาล่าสุด)</label><select id="status"></select></div>
+        <div class="f" id="csWrap" hidden><label for="cstat">สถานะการชำระปัจจุบัน (ContractStatus)</label><select id="cstat"></select></div>
+        <div class="f" id="rgWrap" hidden><label for="region">ภาค (NL_RegionName สัญญาล่าสุด)</label><select id="region"></select></div>
+        <div class="f"><label for="branch">สาขา (สัญญาล่าสุด)</label><select id="branch"></select></div>
+        <div class="f"><label for="q">ค้นหาเลขสัญญา (สัญญาใดก็ได้ในสาย)</label><input id="q" type="text" placeholder="เช่น 5900280001" autocomplete="off"></div>
+      </div>
+      <div class="types"><span class="lab">ประเภทสัญญาล่าสุด</span><div class="tbox" id="tbox"></div>
+        <div class="trow"><button id="tAll">เลือกทั้งหมด</button><button id="tPdr">เฉพาะปรับปรุงโครงสร้างหนี้</button></div></div>
+      <div class="types"><span class="lab">ประเภทสินเชื่อ NL_ContractTypeName (สัญญาล่าสุด) เลือกได้มากกว่า 1 ประเภท</span><div class="tbox" id="cbox"></div>
+        <div class="trow"><button id="cAll">เลือกทั้งหมด</button><button id="cNone">ล้างที่เลือก</button></div></div>
+      <div class="bar">
+        <span class="period" id="period"></span>
+        <span class="spacer"></span>
+        <button id="pAll">ทุกเดือน</button><button id="pYear">ปีล่าสุด</button><button id="pReset">ล้างตัวกรอง</button>
+        <button class="primary" id="exp">Export Excel</button>
+      </div>
+      <div class="hint" id="note" style="margin-top:8px"></div>
+    </div>
+    <div class="tiles" id="tiles" style="margin-top:16px"></div>
+    <div class="charts" style="margin-top:16px">
+      <div class="panel"><h2 id="ch1">จำนวนสายสัญญา แยกตามเดือนสัญญาแรก</h2><div class="monthly" id="monthly"></div><div class="ticks" id="ticks"></div>
+        <div class="legend"><span><i style="background:var(--accent)"></i>สัญญาล่าสุดไม่ได้เกิดจากการ ref</span><span><i style="background:var(--warm)"></i>สัญญาล่าสุดเกิดจากการ ref</span></div></div>
+      <div class="panel"><h2>จำนวนครั้งที่ถูก ref</h2><div class="dist" id="dist"></div></div>
+    </div>
+    <div class="panel" id="anaPanel" style="margin-top:16px">
+      <div class="anahead"><h2>วิเคราะห์ยอดจัด+ประกัน เทียบเกณฑ์อนุมัติ <span class="hint">(จากสายที่แสดงอยู่)</span></h2>
+        <div class="f"><label for="anaAmt">ยอดที่ใช้</label><select id="anaAmt"><option value="first">ยอดจัด+ประกัน สัญญาแรก</option><option value="latest">ยอดจัด+ประกัน สัญญาล่าสุด</option></select></div></div>
+      <div class="tablewrap"><table id="ana"></table></div>
+      <div id="anaCsWrap"><h2 style="margin:16px 0 8px">ผลงานจัดเก็บ แยกตามชั้น (ContractStatus ของสัญญาล่าสุด) <span class="hint">แต่ละช่อง: จำนวนสาย / ยอดเงิน</span></h2>
+      <div class="cfg"><div class="f"><label for="anaRow">แยกแถวตาม</label><select id="anaRow"><option value="cs">ชั้น</option><option value="cs_ctn">ชั้น × ประเภทสินเชื่อ</option><option value="ctn_cs">ประเภทสินเชื่อ × ชั้น</option><option value="cs_rg">ชั้น × ภาค</option><option value="rg_cs">ภาค × ชั้น</option></select></div>
+        <div><span class="lab">คอลัมน์ที่แสดง (เลือกได้)</span><div class="chips" id="anaCols"></div></div>
+      <div style="margin-top:10px"><span class="lab" style="display:block;font-size:12px;color:var(--muted);margin-bottom:4px;font-weight:500">ชั้นที่แสดง (เลือกได้)</span><div class="chips" id="anaCsSel"></div>
+        <div class="trow"><button id="csAll">เลือกทุกชั้น</button><button id="csNone">ล้างที่เลือก</button></div></div>
+      <div class="tablewrap" style="margin-top:8px"><table id="anaCs"></table></div></div>
+      <div class="hint" style="margin-top:6px">ประเภทสินเชื่อใช้ของสัญญาล่าสุด · Nano Finance และ Personal Unsecured Loan เกณฑ์ 20,000 บาท · ประเภทอื่นเกณฑ์ 55,000 บาท · "เกิน" คือมากกว่าเกณฑ์ ยอดเท่ากับเกณฑ์นับเป็น "ไม่เกิน" · สินเชื่อเงินด่วน (จำนำทะเบียนเล่ม) อนุมัติโดยสาขาทั้งหมด ไม่แยกตามเกณฑ์</div>
+    </div>
+    <div class="panel" style="margin-top:16px">
+      <h2>รายการสายสัญญา <span class="hint" id="tcount"></span></h2>
+      <details class="cfgd"><summary class="hint" style="cursor:pointer">เลือกคอลัมน์ที่แสดงในตาราง</summary><div class="chips" id="colChips" style="margin-top:6px"></div></details>
+      <div class="tablewrap"><table id="tbl"><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
+      <div class="pager"><button id="prev">ก่อนหน้า</button><span id="pg"></span><button id="next">ถัดไป</button><span class="hint">คลิกแถวเพื่อดูแต่ละทอดพร้อมวันที่ ref</span></div>
+    </div>
+  </div>
+</div>
+<script>
+"use strict";
+const MONTHS=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+const BASE_Y=2559, SERIAL_2016=42370; // Excel serial of 2016-01-01; cd = days since 2016-01-01, +1 (0 = no date)
+let D=null; // current dataset
+
+/*DECODE_START*/
+// link mode: 'restr' = only restructuring-type contracts continue a chain (refinance / new contract start a new chain); 'all' = follow every ref
+const isBreakType=t=>t==='รีไฟแนนซ์'||t==='สัญญาใหม่';
+function setLink(D,mode){
+  const par=D.parAll.slice();
+  if(mode==='restr'){ const brk=D.meta.ty.map(isBreakType); for(let i=0;i<D.n;i++) if(par[i]>=0&&brk[D.ty[i]]) par[i]=-1; }
+  D.par=par; D.link=mode; return finalize(D);
+}
+function finalize(D){
+  const n=D.n, par=D.par, m=D.m, no=D.no;
+  const state=new Uint8Array(n); let ncyc=0;
+  for(let s=0;s<n;s++){
+    if(state[s]) continue;
+    const path=[]; let x=s;
+    while(x>=0&&state[x]===0){state[x]=1;path.push(x);x=par[x];}
+    if(x>=0&&state[x]===1){
+      const k=path.indexOf(x); let best=x;
+      for(let j=k;j<path.length;j++){const c=path[j]; if(m[c]<m[best]||(m[c]===m[best]&&no[c]<no[best])) best=c;}
+      par[best]=-1; ncyc++;
+    }
+    for(const y of path) state[y]=2;
+  }
+  const root=new Int32Array(n).fill(-1), depth=new Uint8Array(n), hasChild=new Uint8Array(n), stack=[];
+  for(let i=0;i<n;i++){
+    if(root[i]>=0) continue;
+    let x=i; while(root[x]<0&&par[x]>=0){stack.push(x);x=par[x];}
+    if(root[x]<0){root[x]=x;depth[x]=0;}
+    const r=root[x]; let d=depth[x];
+    while(stack.length){const y=stack.pop(); d=Math.min(255,d+1); root[y]=r; depth[y]=d;}
+  }
+  for(let i=0;i<n;i++) if(par[i]>=0) hasChild[par[i]]=1;
+  let cnt=0; for(let i=0;i<n;i++) if(!hasChild[i]) cnt++;
+  const leaves=new Int32Array(cnt); {let k=0; for(let i=0;i<n;i++) if(!hasChild[i]) leaves[k++]=i;}
+  let maxM=0,maxD=0; for(let i=0;i<n;i++){if(m[i]>maxM)maxM=m[i]; if(depth[i]>maxD)maxD=depth[i];}
+  D.root=root; D.depth=depth; D.leaves=leaves; D.maxM=maxM; D.maxD=maxD; D.ncyc=ncyc; return D;
+}
+/*DECODE_END*/
+
+/*UPLOAD_START*/
+const FIELDS={'NL_ContractNo':'no','เดือน':'mon','NL_ContractNoRefference':'ref','NL_CostAndInsurence':'cost','CloseTypeDesc':'cl','AgingGroupCompanyName':'ag','NL_AdjustDebtStructureType':'ty','NL_BranchName':'br','NL_CloseDate':'cd','ContractStatus':'cs','NL_ContractDate':'ct','NL_ContractTypeName':'ctn','NL_RegionName':'rg'};
+const OPTIONAL={cs:1,ct:1,ctn:1,rg:1};
+const FIELDS_LC=Object.fromEntries(Object.entries(FIELDS).map(([k,v])=>[k.toLowerCase(),v]));
+function newSink(){return {cols:null,count:0,R:{no:[],mon:[],ref:[],cost:[],cl:[],ag:[],ty:[],br:[],cd:[],cs:[],ct:[],ctn:[],rg:[]}};}
+function cdFrom(v){
+  if(v==null||v==='') return 0;
+  if(typeof v==='number') return v>=SERIAL_2016?Math.floor(v)-SERIAL_2016+1:0;
+  const s=String(v).trim(); let y,mo,d,mm;
+  if((mm=/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/.exec(s))){y=+mm[1];mo=+mm[2];d=+mm[3];}
+  else if((mm=/^(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})/.exec(s))){d=+mm[1];mo=+mm[2];y=+mm[3];}
+  else return 0;
+  if(y>2400) y-=543;
+  const days=Math.round((Date.UTC(y,mo-1,d)-Date.UTC(2016,0,1))/864e5)+1;
+  return days>0&&days<65535?days:0;
+}
+function sinkRow(sink,vals){
+  if(!sink.cols){
+    const cols={}; vals.forEach((v,i)=>{const k=FIELDS_LC[String(v==null?'':v).replace(/^\uFEFF/,'').trim().toLowerCase()]; if(k&&!(k in cols)) cols[k]=i;});
+    const miss=Object.keys(FIELDS).filter(h=>!(FIELDS[h] in cols)&&!OPTIONAL[FIELDS[h]]);
+    if(miss.length) throw new Error('ไม่พบคอลัมน์: '+miss.join(', '));
+    sink.cols=cols; return;
+  }
+  const c=sink.cols,R=sink.R, no=vals[c.no]; if(no==null||String(no).trim()==='') return;
+  const txt=k=>{const v=vals[c[k]]; return v==null?'':String(v).trim();};
+  R.no.push(String(no).trim()); R.mon.push(txt('mon'));
+  let ref=txt('ref'); if(ref.toLowerCase()==='nan') ref=''; R.ref.push(ref);
+  const cv=vals[c.cost]; R.cost.push(typeof cv==='number'?cv:(parseFloat(String(cv==null?'':cv).replace(/,/g,''))||0));
+  R.cl.push(txt('cl')); R.ag.push(txt('ag')); R.ty.push(txt('ty')); R.br.push(txt('br')); R.cd.push(cdFrom(vals[c.cd])); R.cs.push('cs' in c?txt('cs'):'');
+  if('cs' in c) sink.hasCs=true;
+  R.ctn.push('ctn' in c?txt('ctn'):''); if('ctn' in c) sink.hasCtn=true;
+  R.rg.push('rg' in c?txt('rg'):''); if('rg' in c) sink.hasRg=true;
+  R.ct.push('ct' in c?cdFrom(vals[c.ct]):0); if('ct' in c) sink.hasCt=true;
+  sink.count++;
+}
+function codes(arr,keep,Type){
+  const set=new Set(); for(const i of keep) set.add(arr[i]);
+  const cats=[...set].sort(); const mp=new Map(cats.map((c,i)=>[c,i])); const out=new Type(keep.length);
+  keep.forEach((i,j)=>{out[j]=mp.get(arr[i]);}); return [out,cats];
+}
+function buildD(R,report){
+  const N=R.no.length, idx=new Map(), keep=[], mi=[];
+  for(let i=0;i<N;i++){
+    if(idx.has(R.no[i])){report.dup++;continue;}
+    const mm=/^(\d{1,2})-(\d{4})$/.exec(R.mon[i]);
+    const v=mm?(+mm[2]-BASE_Y)*12+(+mm[1])-1:-1;
+    if(!mm||+mm[1]<1||+mm[1]>12||v<0||v>60000){report.badMonth++;continue;}
+    idx.set(R.no[i],keep.length); keep.push(i); mi.push(v);
+  }
+  const n=keep.length; if(!n) throw new Error('ไม่พบข้อมูลสัญญาในไฟล์');
+  const par=new Int32Array(n), no=new Array(n), m=new Uint16Array(mi), cd=new Uint16Array(n), cost=new Uint32Array(n);
+  for(let j=0;j<n;j++){
+    const i=keep[j]; no[j]=R.no[i]; cd[j]=R.cd[i]; cost[j]=Math.round(R.cost[i]*100);
+    const rf=R.ref[i]; let p=-1; if(rf){const q=idx.get(rf); if(q===undefined) report.missingRef++; else if(q!==j) p=q;} par[j]=p;
+  }
+  const [cl,clc]=codes(R.cl,keep,Uint8Array),[ag,agc]=codes(R.ag,keep,Uint8Array),[ty,tyc]=codes(R.ty,keep,Uint8Array),[br,brc]=codes(R.br,keep,Uint16Array);
+  const D={meta:{cl:clc,ag:agc,ty:tyc,br:brc},n,par,m,cd,cost,cl,ag,ty,br,no};
+  if(report.hasCt){const ct=new Uint16Array(n); for(let j=0;j<n;j++) ct[j]=R.ct[keep[j]]; D.ct=ct;}
+  if(report.hasRg){const [rg,rgc]=codes(R.rg,keep,Uint8Array); D.rg=rg; D.meta.rg=rgc;}
+  if(report.hasCtn){const [ctn,ctnc]=codes(R.ctn,keep,Uint8Array); D.ctn=ctn; D.meta.ctn=ctnc;}
+  if(report.hasCs){const [cs,csc]=codes(R.cs,keep,Uint8Array); D.cs=cs; D.meta.cs=csc;}
+  D.parAll=par.slice();
+  return setLink(D,'restr');
+}
+async function* textChunks(stream){
+  const r=stream.pipeThrough(new TextDecoderStream()).getReader();
+  for(;;){const {value,done}=await r.read(); if(done) break; yield value;}
+}
+async function readCsv(file,sink,prog){
+  let field='',row=[],inQ=false,pq=false;
+  const emit=()=>{row.push(field);field=''; if(!(row.length===1&&row[0]==='')) sinkRow(sink,row); row=[];};
+  for await(const chunk of textChunks(file.stream())){
+    for(let i=0;i<chunk.length;i++){
+      const ch=chunk[i];
+      if(pq){pq=false; if(ch==='"'){field+='"';continue;} inQ=false;}
+      if(inQ){ if(ch==='"') pq=true; else field+=ch; continue; }
+      if(ch==='"'&&field===''){inQ=true;}
+      else if(ch===','){row.push(field);field='';}
+      else if(ch==='\n'){emit();}
+      else if(ch!=='\r'){field+=ch;}
+    }
+    prog(sink.count);
+  }
+  if(pq) inQ=false; if(field!==''||row.length) emit();
+}
+const unent=s=>s.indexOf('&')<0?s:s.replace(/&(lt|gt|amp|quot|apos);|&#(\d+);/g,(a,b,c)=>c?String.fromCharCode(+c):({lt:'<',gt:'>',amp:'&',quot:'"',apos:"'"}[b]));
+async function zipOpen(file){
+  const buf=await file.arrayBuffer(), dv=new DataView(buf);
+  let e=buf.byteLength-22; while(e>=0&&dv.getUint32(e,true)!==0x06054b50) e--;
+  if(e<0) throw new Error('ไม่ใช่ไฟล์ .xlsx ที่อ่านได้');
+  const cnt=dv.getUint16(e+10,true); let p=dv.getUint32(e+16,true); const ents={}, td=new TextDecoder();
+  for(let i=0;i<cnt;i++){
+    if(dv.getUint32(p,true)!==0x02014b50) break;
+    const method=dv.getUint16(p+10,true), csz=dv.getUint32(p+20,true), nl=dv.getUint16(p+28,true), el=dv.getUint16(p+30,true), cl=dv.getUint16(p+32,true), lo=dv.getUint32(p+42,true);
+    ents[td.decode(new Uint8Array(buf,p+46,nl))]={method,csz,lo}; p+=46+nl+el+cl;
+  }
+  return {buf,ents};
+}
+function zipStream(z,name){
+  const e=z.ents[name]; if(!e) return null; const dv=new DataView(z.buf);
+  const start=e.lo+30+dv.getUint16(e.lo+26,true)+dv.getUint16(e.lo+28,true);
+  const raw=new Blob([new Uint8Array(z.buf,start,e.csz)]).stream();
+  return e.method===0?raw:raw.pipeThrough(new DecompressionStream('deflate-raw'));
+}
+async function readSharedStrings(z){
+  const st=zipStream(z,'xl/sharedStrings.xml'); const out=[]; if(!st) return out; let buf='';
+  const re=/<si>([\s\S]*?)<\/si>|<si\/>/g, tre=/<t\b[^>]*>([\s\S]*?)<\/t>/g;
+  const one=x=>{let s='',mm; x=x.replace(/<rPh[\s\S]*?<\/rPh>/g,''); tre.lastIndex=0; while((mm=tre.exec(x))) s+=mm[1]; return unent(s);};
+  for await(const c of textChunks(st)){
+    buf+=c; const cut=buf.lastIndexOf('</si>'); if(cut<0) continue; const seg=buf.slice(0,cut+5); buf=buf.slice(cut+5);
+    re.lastIndex=0; let mm; while((mm=re.exec(seg))) out.push(mm[1]===undefined?'':one(mm[1]));
+  }
+  return out;
+}
+const colIdx=s=>{let n=0;for(let i=0;i<s.length;i++)n=n*26+s.charCodeAt(i)-64;return n-1;};
+async function readXlsx(file,sink,prog){
+  const z=await zipOpen(file); prog(-1);
+  const ss=await readSharedStrings(z);
+  let name='xl/worksheets/sheet1.xml'; if(!z.ents[name]) name=Object.keys(z.ents).filter(k=>/^xl\/worksheets\/[^\/]+\.xml$/.test(k)).sort()[0];
+  const st=zipStream(z,name); if(!st) throw new Error('ไม่พบชีตข้อมูลในไฟล์');
+  const rowRe=/<row\b[^>]*?(?:\/>|>([\s\S]*?)<\/row>)/g, cellRe=/<c\b([^>]*?)(?:\/>|>([\s\S]*?)<\/c>)/g;
+  const rAt=/\br="([A-Z]+)\d*"/, tAt=/\bt="(\w+)"/, vRe=/<v>([\s\S]*?)<\/v>/, isRe=/<is>[\s\S]*?<t\b[^>]*>([\s\S]*?)<\/t>/;
+  let buf='';
+  const proc=seg=>{
+    rowRe.lastIndex=0; let rm;
+    while((rm=rowRe.exec(seg))){
+      if(rm[1]===undefined) continue;
+      const vals=[]; cellRe.lastIndex=0; let cm; const body=rm[1];
+      while((cm=cellRe.exec(body))){
+        if(cm[2]===undefined) continue;
+        const ra=rAt.exec(cm[1]); if(!ra) continue; const t=(tAt.exec(cm[1])||[])[1]; let v;
+        if(t==='inlineStr'){const q=isRe.exec(cm[2]); v=q?unent(q[1]):'';}
+        else {const q=vRe.exec(cm[2]); if(!q) continue; const raw=q[1];
+          if(t==='s') v=ss[+raw]; else if(t==='str') v=unent(raw); else if(t==='b'||t==='e') v=raw; else v=raw===''?null:Number(raw);}
+        vals[colIdx(ra[1])]=v;
+      }
+      sinkRow(sink,vals);
+    }
+  };
+  for await(const c of textChunks(st)){
+    buf+=c; const cut=buf.lastIndexOf('</row>'); if(cut<0) continue;
+    proc(buf.slice(0,cut+6)); buf=buf.slice(cut+6); prog(sink.count);
+  }
+  if(buf.indexOf('<row')>=0) proc(buf);
+}
+async function loadFile(file,prog){
+  const sink=newSink(), report={hasRg:false,hasCtn:false,hasCs:false,hasCt:false,dup:0,badMonth:0,missingRef:0,rows:0};
+  if(/\.csv$/i.test(file.name)) await readCsv(file,sink,prog);
+  else if(/\.xlsx$/i.test(file.name)) await readXlsx(file,sink,prog);
+  else throw new Error('รองรับเฉพาะไฟล์ .xlsx หรือ .csv');
+  if(!sink.cols) throw new Error('ไม่พบหัวคอลัมน์ในไฟล์');
+  report.rows=sink.count; report.hasCs=!!sink.hasCs; report.hasCtn=!!sink.hasCtn; report.hasRg=!!sink.hasRg; report.hasCt=!!sink.hasCt; prog(-2);
+  return {D:buildD(sink.R,report),report};
+}
+/*UPLOAD_END*/
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const mlabel=i=>String(i%12+1).padStart(2,'0')+'-'+(BASE_Y+Math.floor(i/12));
+const fmt=n=>n.toLocaleString('en-US');
+const baht=c=>(c/100).toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:2});
+function dateOf(cd){ if(!cd) return null; return new Date(Date.UTC(2016,0,cd)); }
+function dstr(cd){ const d=dateOf(cd); if(!d) return '-'; return d.getUTCDate()+'/'+(d.getUTCMonth()+1)+'/'+(d.getUTCFullYear()+543); }
+const stShort=s=>s.replace(/^\d+\s*/,'');
+// date of a ref: contract date of the new contract when the file has NL_ContractDate, otherwise close date of the previous contract
+function refDate(x){ const p=D.par[x]; if(p<0) return 0; return (D.ct&&D.ct[x])?D.ct[x]:D.cd[p]; }
+// date of the k-th contract in the chain (incl. the first): its own contract date, else close date of the previous one
+function seqDate(x){ if(D.ct&&D.ct[x]) return D.ct[x]; const p=D.par[x]; return p<0?0:D.cd[p]; }
+const isPdr=t=>/^ปรับปรุงโครงสร้างหนี้/.test(t);
+
+let S={sort:'lm',dir:-1,page:0,open:new Set(),rows:new Int32Array(0),search:null,source:''};
+const PAGE=50;
+
+function fillMY(mSel,ySel,val){
+  mSel.innerHTML=MONTHS.map((n,i)=>`<option value="${i}">${n}</option>`).join('');
+  let o=''; for(let y=BASE_Y;y<=BASE_Y+Math.floor(D.maxM/12);y++) o+=`<option value="${y}">${y}</option>`;
+  ySel.innerHTML=o; setMY(mSel,ySel,val);
+}
+function setMY(mSel,ySel,idx){ mSel.value=String(idx%12); ySel.value=String(BASE_Y+Math.floor(idx/12)); }
+function getMY(mSel,ySel){ return (Number(ySel.value)-BASE_Y)*12+Number(mSel.value); }
+function resetRange(){
+  const ly=Math.floor(D.maxM/12)*12;
+  setMY($('lmF1'),$('lyF1'),ly);setMY($('lmF2'),$('lyF2'),D.maxM);setMY($('fmF1'),$('fyF1'),0);setMY($('fmF2'),$('fyF2'),D.maxM);
+}
+function setupData(){
+  const ly=Math.floor(D.maxM/12)*12;
+  fillMY($('lmF1'),$('lyF1'),ly);fillMY($('lmF2'),$('lyF2'),D.maxM);fillMY($('fmF1'),$('fyF1'),0);fillMY($('fmF2'),$('fyF2'),D.maxM);
+  $('status').innerHTML='<option value="-1">ทั้งหมด</option>'+D.meta.cl.map((c,i)=>`<option value="${i}">${esc(c||'(ไม่ระบุ)')}</option>`).join('');
+  $('branch').innerHTML='<option value="-1">ทุกสาขา</option>'+D.meta.br.map((c,i)=>[c,i]).sort((a,b)=>a[0]<b[0]?-1:1).map(([c,i])=>`<option value="${i}">${esc(c||'(ไม่ระบุ)')}</option>`).join('');
+  $('csWrap').hidden=!D.cs;
+  if(D.cs) $('cstat').innerHTML='<option value="-1">ทั้งหมด</option>'+D.meta.cs.map((c,i)=>`<option value="${i}">${esc(c||'(ไม่ระบุ)')}</option>`).join('');
+  $('rgWrap').hidden=!D.rg;
+  if(D.rg) $('region').innerHTML='<option value="-1">ทุกภาค</option>'+D.meta.rg.map((c,i)=>[c,i]).sort((a,b)=>a[0]<b[0]?-1:1).map(([c,i])=>`<option value="${i}">${esc(c||'(ไม่ระบุ)')}</option>`).join('');
+  buildColChips(); buildAnaCols();
+  $('cbox').parentElement.hidden=!D.ctn;
+  if(D.ctn) $('cbox').innerHTML=D.meta.ctn.map((t,i)=>`<label><input type="checkbox" class="cchk" data-i="${i}" checked>${esc(t||'(ไม่ระบุ)')}</label>`).join('');
+  $('tbox').innerHTML=D.meta.ty.map((t,i)=>`<label><input type="checkbox" class="tchk" data-i="${i}" checked>${esc(t||'(ไม่ระบุ)')}</label>`).join('');
+  $('depth').value='all';$('q').value='';S.search=null;S.page=0;S.open.clear();
+  $('sub').textContent=`${S.source}: ${fmt(D.n)} สัญญา รวมเป็น ${fmt(D.leaves.length)} สาย (ข้อมูลถึงเดือน ${mlabel(D.maxM)})`;
+}
+function ctnMask(){ if(!D.ctn) return null; const m=new Uint8Array(D.meta.ctn.length); document.querySelectorAll('.cchk').forEach(c=>{m[+c.dataset.i]=c.checked?1:0;}); return m; }
+function ctnLabel(){ if(!D.ctn) return '(ไม่มีในข้อมูล)'; const all=[...document.querySelectorAll('.cchk')]; const on=all.filter(c=>c.checked); return on.length===all.length?'ทั้งหมด':on.map(c=>c.parentElement.textContent).join(', ')||'(ไม่เลือก)'; }
+function typeMask(){ const m=new Uint8Array(D.meta.ty.length); document.querySelectorAll('.tchk').forEach(c=>{m[+c.dataset.i]=c.checked?1:0;}); return m; }
+function typeLabel(){ const all=[...document.querySelectorAll('.tchk')]; const on=all.filter(c=>c.checked); return on.length===all.length?'ทั้งหมด':on.map(c=>c.parentElement.textContent).join(', ')||'(ไม่เลือก)'; }
+
+function wire(){
+  const chg=()=>{S.page=0;S.open.clear();refresh();};
+  for(const id of ['lmF1','lyF1','lmF2','lyF2','fmF1','fyF1','fmF2','fyF2','depth','status','branch','cstat','basis','region']) $(id).addEventListener('change',chg);
+  $('link').addEventListener('change',()=>{ setLink(D,$('link').value); S.page=0; S.open.clear(); if(S.search) doSearch(); refresh(); });
+  $('anaAmt').addEventListener('change',renderAnalysis);
+  $('anaRow').addEventListener('change',renderAnalysisCs);
+  $('anaCsSel').addEventListener('change',()=>{ csOff=new Set([...document.querySelectorAll('.cssel')].filter(c=>!c.checked).map(c=>c.dataset.c)); saveCsOff(); renderAnalysisCs(); });
+  $('csAll').onclick=()=>{ csOff=new Set(); saveCsOff(); buildCsSel(); renderAnalysisCs(); };
+  $('csNone').onclick=()=>{ csOff=new Set(D.meta.cs.map(c=>c||'(ไม่ระบุ)')); saveCsOff(); buildCsSel(); renderAnalysisCs(); };
+  $('anaCols').addEventListener('change',()=>{ anaOff=new Set([...document.querySelectorAll('.anachk')].filter(c=>!c.checked).map(c=>c.dataset.g)); try{localStorage.setItem('anaOff',JSON.stringify([...anaOff]));}catch(e){} renderAnalysisCs(); });
+  $('colChips').addEventListener('change',()=>{ hiddenCols=new Set([...document.querySelectorAll('.colchk')].filter(c=>!c.checked).map(c=>c.dataset.id)); try{localStorage.setItem('hiddenCols',JSON.stringify([...hiddenCols]));}catch(e){} renderTable(); });
+  initSkin();
+  $('tbox').addEventListener('change',chg); $('cbox').addEventListener('change',chg);
+  $('cAll').onclick=()=>{document.querySelectorAll('.cchk').forEach(c=>c.checked=true);chg();};
+  $('cNone').onclick=()=>{document.querySelectorAll('.cchk').forEach(c=>c.checked=false);chg();};
+  $('tAll').onclick=()=>{document.querySelectorAll('.tchk').forEach(c=>c.checked=true);chg();};
+  $('tPdr').onclick=()=>{document.querySelectorAll('.tchk').forEach(c=>c.checked=isPdr(D.meta.ty[+c.dataset.i]));chg();};
+  let t=null; $('q').addEventListener('input',()=>{clearTimeout(t);t=setTimeout(()=>{S.page=0;S.open.clear();doSearch();refresh();},250);});
+  $('pAll').onclick=()=>{setMY($('lmF1'),$('lyF1'),0);setMY($('lmF2'),$('lyF2'),D.maxM);chg();};
+  $('pYear').onclick=()=>{setMY($('lmF1'),$('lyF1'),Math.floor(D.maxM/12)*12);setMY($('lmF2'),$('lyF2'),D.maxM);chg();};
+  $('pReset').onclick=()=>{resetRange();$('depth').value='all';$('status').value='-1';$('branch').value='-1';if(D.cs)$('cstat').value='-1'; if(D.rg)$('region').value='-1';$('q').value='';S.search=null;document.querySelectorAll('.tchk,.cchk').forEach(c=>c.checked=true);chg();};
+  $('prev').onclick=()=>{if(S.page>0){S.page--;renderTable();}};
+  $('next').onclick=()=>{if((S.page+1)*PAGE<S.rows.length){S.page++;renderTable();}};
+  $('exp').onclick=doExport;
+  $('thead').addEventListener('click',e=>{const th=e.target.closest('th[data-k]'); if(!th)return; const k=th.dataset.k; if(S.sort===k)S.dir*=-1; else {S.sort=k;S.dir=-1;} S.page=0;sortRows();renderTable();});
+  $('tbody').addEventListener('click',e=>{const tr=e.target.closest('tr.main'); if(!tr)return; const i=Number(tr.dataset.i); if(S.open.has(i))S.open.delete(i); else S.open.add(i); renderTable();});
+  $('upBtn').onclick=()=>$('upFile').click();
+  $('upFile').addEventListener('change',onUpload);
+}
+async function onUpload(){
+  const f=$('upFile').files[0]; if(!f) return; const st=$('ustat'); const t0=Date.now();
+  $('upBtn').disabled=true; st.style.color='';
+  try{
+    const r=await loadFile(f,n=>{ st.textContent=n===-1?'กำลังแตกไฟล์ .xlsx…':n===-2?'กำลังสร้างสายสัญญา…':`กำลังอ่าน ${fmt(n)} แถว…`; });
+    await new Promise(r=>setTimeout(r,20));
+    D=r.D; if($('link').value!=='restr') setLink(D,$('link').value); S.source='ไฟล์ '+f.name; setupData(); $('load').hidden=true; $('app').hidden=false;
+    const rp=r.report, extra=[]; if(rp.dup) extra.push(`ข้ามเลขสัญญาซ้ำ ${fmt(rp.dup)}`); if(rp.badMonth) extra.push(`ข้ามแถวที่เดือนผิดรูปแบบ ${fmt(rp.badMonth)}`); if(rp.missingRef) extra.push(`ไม่พบสัญญาอ้างอิง ${fmt(rp.missingRef)} (ถือเป็นสัญญาแรก)`);
+    st.textContent=`โหลด ${f.name} แล้ว: ${fmt(rp.rows)} แถว ข้อมูลถึงเดือน ${mlabel(D.maxM)} (${((Date.now()-t0)/1000).toFixed(0)} วินาที)`+(extra.length?' · '+extra.join(' · '):'');
+    if(D.ct) st.textContent+=' · '+dateCheck();
+    refresh();
+  }catch(e){ st.style.color='var(--warm)'; st.textContent='อ่านไฟล์ไม่สำเร็จ: '+(e&&e.message||e)+' ('+(D?'ข้อมูลเดิมยังใช้ได้)':'ลองเลือกไฟล์ใหม่)'); }
+  finally{ $('upBtn').disabled=false; $('upFile').value=''; }
+}
+function doSearch(){
+  const q=$('q').value.trim();
+  if(q.length<4){S.search=null;return;}
+  const set=new Set(); const ql=q.toLowerCase();
+  for(let i=0;i<D.n;i++) if(D.no[i].toLowerCase().includes(ql)) set.add(D.root[i]);
+  S.search=set;
+}
+function basisFirst(){ return $('basis').value!=='latest'; }
+function getFilter(){
+  const a1=getMY($('lmF1'),$('lyF1')),a2=getMY($('lmF2'),$('lyF2')),b1=getMY($('fmF1'),$('fyF1')),b2=getMY($('fmF2'),$('fyF2')), first=basisFirst();
+  return {l1:first?b1:a1,l2:first?b2:a2,f1:first?a1:b1,f2:first?a2:b2,m1:a1,m2:a2,o1:b1,o2:b2,first,asof:$('basis').value==='asof',
+    depth:$('depth').value,status:Number($('status').value),branch:Number($('branch').value),cs:D.cs?Number($('cstat').value):-1,rg:D.rg?Number($('region').value):-1};
+}
+function basisNames(first){ return first?['สัญญาแรก','สัญญาล่าสุด']:['สัญญาล่าสุด (เปิดล่าสุด)','สัญญาแรก']; }
+function filterRows(){
+  const f=getFilter(), L=D.leaves, out=[]; const {m,root,depth,cl,br,ty}=D; const tm=typeMask(), cm=ctnMask(), ctn=D.ctn;
+  const dsel=f.depth==='all'?-1:Number(f.depth);
+  if(f.asof&&!S.search){
+    // as-of view: chains whose first contract is in [m1,m2]; row = latest contract of the chain with month <= m2
+    const par=D.par, B=f.m2, mark=new Uint8Array(D.n), after=new Int32Array(D.n).fill(-1);
+    for(let j=0;j<D.n;j++){const p=par[j]; if(p<0) continue; if(m[j]<=B) mark[p]=1; else after[p]=j;}
+    S.after=after;
+    for(let i=0;i<D.n;i++){
+      if(m[i]>B||mark[i]) continue;
+      const rm=m[root[i]]; if(rm<f.f1||rm>f.f2) continue;
+      if(m[i]<f.l1||m[i]>f.l2) continue;
+      if(dsel>=0){ if(dsel===5){if(depth[i]<5)continue;} else if(depth[i]!==dsel)continue; }
+      if(!tm[ty[i]]) continue;
+      if(cm&&!cm[ctn[i]]) continue;
+      if(f.status>=0&&cl[i]!==f.status) continue;
+      if(f.branch>=0&&br[i]!==f.branch) continue;
+      if(f.cs>=0&&D.cs[i]!==f.cs) continue;
+      if(f.rg>=0&&D.rg[i]!==f.rg) continue;
+      out.push(i);
+    }
+    return Int32Array.from(out);
+  }
+  S.after=null;
+  if(S.search){ for(let k=0;k<L.length;k++){const i=L[k]; if(S.search.has(root[i])) out.push(i);} return Int32Array.from(out); }
+  for(let k=0;k<L.length;k++){
+    const i=L[k], lm=m[i];
+    if(lm<f.l1||lm>f.l2) continue;
+    const rm=m[root[i]]; if(rm<f.f1||rm>f.f2) continue;
+    if(dsel>=0){ if(dsel===5){if(depth[i]<5)continue;} else if(depth[i]!==dsel)continue; }
+    if(!tm[ty[i]]) continue;
+    if(cm&&!cm[ctn[i]]) continue;
+    if(f.status>=0&&cl[i]!==f.status) continue;
+    if(f.branch>=0&&br[i]!==f.branch) continue;
+    if(f.cs>=0&&D.cs[i]!==f.cs) continue;
+    if(f.rg>=0&&D.rg[i]!==f.rg) continue;
+    out.push(i);
+  }
+  return Int32Array.from(out);
+}
+function sortKey(k){
+  const {m,root,depth,cost,cd,par}=D;
+  switch(k){
+    case 'rm': return i=>m[root[i]];
+    case 'depth': return i=>depth[i];
+    case 'rd': return i=>refDate(i);
+    case 'lm': return i=>m[i];
+    case 'cost': return i=>cost[root[i]];
+    case 'cd': return i=>cd[i];
+    default: return i=>i;
+  }
+}
+function sortRows(){ const kf=sortKey(S.sort), d=S.dir; S.rows.sort((a,b)=>{const x=kf(a),y=kf(b); return x===y?(a-b):(x<y?-d:d);}); }
+function refresh(){
+  S.rows=filterRows(); sortRows();
+  const f=getFilter();
+  const bn=basisNames(f.first), full=(f.o1<=0&&f.o2>=D.maxM);
+  $('lab1').textContent='ช่วงเดือน'+bn[0]+' (ใช้แสดงและ export)'; $('lab2').textContent='ช่วงเดือน'+bn[1]+' (ไม่บังคับ)';
+  if(f.asof){ $('lab1').textContent='ช่วงเดือนที่สัญญาแรกต้องอยู่ (ใช้แสดงและ export)'; $('lab2').textContent='ช่วงเดือนสัญญาล่าสุดที่แสดง (ไม่บังคับ)'; }
+  $('ch1').textContent='จำนวนสายสัญญา แยกตามเดือน'+(f.first?'สัญญาแรก':'เปิดล่าสุด');
+  $('period').innerHTML=S.search?`ผลการค้นหา “${esc($('q').value.trim())}”`:(f.asof?`แสดงข้อมูล สัญญาแรกอยู่ในช่วง <b>${mlabel(f.m1)}</b> ถึง <b>${mlabel(f.m2)}</b> · สัญญาล่าสุดนับถึงสิ้นช่วง (<b>${mlabel(f.m2)}</b>)`:`แสดงข้อมูล เดือน${bn[0]} <b>${mlabel(f.m1)}</b> ถึง <b>${mlabel(f.m2)}</b>`)+(full?'':` · เดือน${bn[1]} <b>${mlabel(f.o1)}</b> ถึง <b>${mlabel(f.o2)}</b>`);
+  if(S.search){ $('note').innerHTML='เมื่อค้นหาเลขสัญญา ระบบไม่ใช้ตัวกรองอื่น ตัวกรองที่ตั้งไว้ตอนนี้ให้ผลกับสายที่ค้นเจอดังนี้<br>'+whyLines(f); }
+  else $('note').textContent=(f.m1>f.m2||f.o1>f.o2?'ช่วงเดือนเริ่มต้นอยู่หลังเดือนสิ้นสุด':'');
+  renderSummary(); renderTable();
+}
+function renderSummary(){
+  renderAnalysis();
+  const R=S.rows, {m,depth,cost,root}=D; let ref=0,refTotal=0,sumCost=0; const bins=[0,0,0,0,0,0];
+  const fl=getFilter(); const mm=new Map(); const roots=new Set();
+  for(let k=0;k<R.length;k++){const i=R[k],d=depth[i]; if(d>0)ref++; refTotal+=d; bins[Math.min(5,d)]++;
+    if(!roots.has(root[i])){roots.add(root[i]); sumCost+=cost[root[i]];}
+    const km=fl.first?m[root[i]]:m[i]; let e=mm.get(km); if(!e){e=[0,0];mm.set(km,e);} e[d>0?1:0]++;}
+  const n=R.length;
+  $('tiles').innerHTML=[
+    ['สายสัญญาที่แสดง',fmt(n),`สัญญาแรกไม่ซ้ำ ${fmt(roots.size)} สัญญา`],
+    ['สายที่ถูก ref แล้ว',fmt(ref),n?(ref/n*100).toFixed(1)+'% ของสายที่แสดง':'-'],
+    ['จำนวนครั้ง ref รวม',fmt(refTotal),n?'เฉลี่ย '+(refTotal/n).toFixed(2)+' ครั้ง/สาย':'-'],
+    ['ยอดจัด+ประกัน สัญญาแรกรวม',baht(sumCost),'บาท (นับสัญญาแรกไม่ซ้ำ)']
+  ].map(t=>`<div class="tile"><div class="k">${t[0]}</div><div class="v">${t[1]}</div><div class="n">${t[2]}</div></div>`).join('');
+  const lab=['0 (ไม่เคย ref)','1 ครั้ง','2 ครั้ง','3 ครั้ง','4 ครั้ง','5 ครั้งขึ้นไป'], mx=Math.max(1,...bins);
+  $('dist').innerHTML=bins.map((b,i)=>`<div class="r"><span>${lab[i]}</span><span class="t"><i style="width:${b/mx*100}%"></i></span><span class="num">${fmt(b)} · ${n?(b/n*100).toFixed(1):'0.0'}%</span></div>`).join('');
+  let keys=[...mm.keys()]; let a=S.search?(keys.length?Math.min(...keys):0):fl.m1, b=S.search?(keys.length?Math.max(...keys):0):fl.m2;
+  if(!(b>=a)){ $('monthly').innerHTML='';$('ticks').innerHTML='';return; }
+  let mxv=1; for(const e of mm.values()) mxv=Math.max(mxv,e[0]+e[1]);
+  let bars='',tk=''; const many=(b-a)>30;
+  for(let i=a;i<=b;i++){const e=mm.get(i)||[0,0]; const h0=e[0]/mxv*100,h1=e[1]/mxv*100;
+    bars+=`<div class="c" title="${mlabel(i)}: ${fmt(e[0]+e[1])} สาย (ref แล้ว ${fmt(e[1])})"><div class="s1" style="height:${h1}%"></div><div class="s0" style="height:${h0}%"></div></div>`;
+    tk+=`<span>${(!many||i%12===0)?(many?String(BASE_Y+Math.floor(i/12)):mlabel(i).slice(0,2)+'/'+String(BASE_Y+Math.floor(i/12)).slice(2)):''}</span>`;}
+  $('monthly').innerHTML=bars; $('ticks').innerHTML=tk;
+}
+const COLS0=[['#',null,'r'],['สัญญาแรก',null],['เดือนสัญญาแรก','rm'],['ยอดจัด+ประกัน (สัญญาแรก)','cost','r'],['จำนวนครั้ง ref','depth'],['ref ล่าสุดเมื่อ','rd'],['สัญญาล่าสุด',null],['ประเภทสัญญาล่าสุด',null],['เดือนเปิดล่าสุด','lm'],['สถานะการปิด',null],['ชั้นหนี้ ณ ปิด',null],['วันที่ปิด','cd'],['สาขา',null]];
+// every table column has a stable id so the viewer can hide/show it
+const TBL=[ ['no','#',null,'r'],['f','สัญญาแรก'],['fm','เดือนสัญญาแรก','rm'],['cost','ยอดจัด+ประกัน (สัญญาแรก)','cost','r'],['dp','จำนวนครั้ง ref','depth'],['rd','ref ล่าสุดเมื่อ','rd'],['l','สัญญาล่าสุด'],['ctn','ประเภทสินเชื่อ'],['ty','ประเภทสัญญาล่าสุด'],['lm','เดือนเปิดล่าสุด','lm'],['cl','สถานะการปิด'],['ag','ชั้นหนี้ ณ ปิด'],['cs','สถานะการชำระปัจจุบัน'],['cd','วันที่ปิด','cd'],['rg','ภาค'],['br','สาขา'],['af','ref ต่อหลังสิ้นช่วง'] ];
+const TBL_DEFAULT_OFF={};
+let hiddenCols=new Set(); try{ const s=JSON.parse(localStorage.getItem('hiddenCols')||'null'); hiddenCols=new Set(s||Object.keys(TBL_DEFAULT_OFF)); }catch(e){ hiddenCols=new Set(Object.keys(TBL_DEFAULT_OFF)); }
+function tblAvail(id){ return id==='ctn'?!!D.ctn:id==='cs'?!!D.cs:id==='rg'?!!D.rg:id==='af'?!!S.after:true; }
+function buildColChips(){
+  $('colChips').innerHTML=TBL.filter(c=>c[0]!=='no'&&tblAvail(c[0])||c[0]==='af').map(c=>`<label><input type="checkbox" class="colchk" data-id="${c[0]}" ${hiddenCols.has(c[0])?'':'checked'}>${esc(c[1])}</label>`).join('');
+}
+function cols(){ return TBL.filter(c=>tblAvail(c[0])&&!hiddenCols.has(c[0])).map(c=>({id:c[0],t:c[1],k:c[2]||null,cls:c[3]||''})); }
+function renderTable(){
+  const COLS=cols(); const R=S.rows, {m,root,depth,cost,cd,par,cl,ag,br,ty,no,meta}=D;
+  if(!COLS.some(c=>c.k===S.sort)&&S.sort!=='lm') {}
+  $('thead').innerHTML='<tr>'+COLS.map(c=>`<th class="${c.cls} ${c.k?'sortable':''}" ${c.k?`data-k="${c.k}"`:''}>${c.t}${c.k&&S.sort===c.k?` <span class="ar">${S.dir<0?'↓':'↑'}</span>`:''}</th>`).join('')+'</tr>';
+  const s=S.page*PAGE, e=Math.min(R.length,s+PAGE); let h='';
+  for(let k=s;k<e;k++){const i=R[k], r=root[i], d=depth[i], st=meta.cl[cl[i]]||'';
+    const cell={
+      no:()=>`<td class="r">${k+1}</td>`, f:()=>`<td class="mono">${esc(no[r])}</td>`, fm:()=>`<td>${mlabel(m[r])}</td>`, cost:()=>`<td class="r">${baht(cost[r])}</td>`,
+      dp:()=>`<td><span class="pill ${d>0?'w':''}">${d}</span></td>`, rd:()=>`<td>${par[i]>=0?dstr(refDate(i)):'-'}</td>`, l:()=>`<td class="mono">${esc(no[i])}</td>`,
+      ctn:()=>`<td>${esc(meta.ctn[D.ctn[i]]||'-')}</td>`, ty:()=>`<td>${esc(meta.ty[ty[i]]||'-')}</td>`, lm:()=>`<td>${mlabel(m[i])}</td>`,
+      cl:()=>`<td><span class="st ${st==='Active'?'act':''}">${esc(st||'-')}</span></td>`, ag:()=>`<td>${esc(stShort(meta.ag[ag[i]]||'-'))}</td>`,
+      cs:()=>`<td><span class="st">${esc(meta.cs[D.cs[i]]||'-')}</span></td>`, cd:()=>`<td>${dstr(cd[i])}</td>`, rg:()=>`<td>${esc(meta.rg[D.rg[i]]||'-')}</td>`, br:()=>`<td>${esc(meta.br[br[i]]||'-')}</td>`,
+      af:()=>`<td>${S.after[i]>=0?esc(no[S.after[i]])+' ('+mlabel(m[S.after[i]])+')':'-'}</td>`};
+    h+=`<tr class="main ${S.open.has(i)?'open':''}" data-i="${i}">`+COLS.map(c=>cell[c.id]()).join('')+'</tr>';
+    if(S.open.has(i)) h+=`<tr class="detail"><td colspan="${COLS.length}">${chainHtml(i)}</td></tr>`;
+  }
+  if(!R.length) h=`<tr><td colspan="${COLS.length}" class="hint" style="padding:20px">ไม่พบสายสัญญาตามเงื่อนไขที่เลือก</td></tr>`;
+  $('tbody').innerHTML=h;
+  $('tcount').textContent=`(${fmt(R.length)} สาย)`;
+  const pages=Math.max(1,Math.ceil(R.length/PAGE)); $('pg').textContent=`หน้า ${S.page+1} / ${fmt(pages)}`;
+  $('prev').disabled=S.page===0; $('next').disabled=S.page+1>=pages;
+}
+function pathOf(leaf){const p=[];let x=leaf;while(x>=0){p.push(x);x=D.par[x];}return p.reverse();}
+function chainHtml(leaf){
+  const p=pathOf(leaf), {m,cd,cost,cl,ag,ty,par,no,meta}=D, ct=D.ct;
+  let h='<table class="chain"><thead><tr><th>ทอด</th><th>เลขสัญญา</th><th>เดือนเปิด</th>'+(ct?'<th>วันทำสัญญา</th>':'')+'<th>วันที่ ref'+(ct?' (วันทำสัญญาใหม่)':' (วันปิดสัญญาก่อนหน้า)')+'</th>'+(ct?'<th>วันปิดสัญญาก่อนหน้า</th>':'')+'<th>ประเภท</th><th class="r">ยอดจัด+ประกัน (ของสัญญานี้)</th><th>สถานะการปิด</th><th>ชั้นหนี้ ณ ปิด</th>'+(D.cs?'<th>สถานะการชำระปัจจุบัน</th>':'')+'<th>วันที่ปิด</th></tr></thead><tbody>';
+  p.forEach((i,k)=>{h+=`<tr><td>${k===0?'สัญญาแรก':'ref ครั้งที่ '+k}</td><td class="mono">${esc(no[i])}</td><td>${mlabel(m[i])}</td>${ct?`<td>${dstr(ct[i])}</td>`:''}<td>${k===0?'-':dstr(refDate(i))}</td>${ct?`<td>${k===0?'-':dstr(cd[par[i]])}</td>`:''}<td>${esc(meta.ty[ty[i]]||'-')}</td><td class="r">${baht(cost[i])}</td><td>${esc(meta.cl[cl[i]]||'-')}</td><td>${esc(stShort(meta.ag[ag[i]]||'-'))}</td>${D.cs?`<td>${esc(meta.cs[D.cs[i]]||'-')}</td>`:''}<td>${dstr(cd[i])}</td></tr>`;});
+  return h+'</tbody></table>';
+}
+
+function dateCheck(){
+  const {par,ct,cd,m}=D; let hops=0,same=0,diff=0,noCt=0,monthBad=0,earlier=0;
+  for(let i=0;i<D.n;i++){ const p=par[i]; if(p<0) continue; hops++;
+    if(!ct[i]){noCt++;continue;}
+    const dd=ct[i]-(cd[p]||0); if(cd[p]&&dd===0) same++; else if(cd[p]) diff++;
+    if(cd[p]&&ct[i]<cd[p]) earlier++;
+    const d=new Date(Date.UTC(2016,0,ct[i])); const mi=(d.getUTCFullYear()+543-BASE_Y)*12+d.getUTCMonth(); if(mi!==m[i]) monthBad++; }
+  return `ตรวจวันที่ ${fmt(hops)} ทอด: วันทำสัญญาใหม่ตรงกับวันปิดสัญญาเดิม ${fmt(same)}, ไม่ตรง ${fmt(diff)} (ทำสัญญาก่อนวันปิดเดิม ${fmt(earlier)}), ไม่มีวันทำสัญญา ${fmt(noCt)}, เดือนของวันทำสัญญาไม่ตรงคอลัมน์เดือน ${fmt(monthBad)}`;
+}
+
+function whyLines(f){
+  const {m,root,depth,cl,br,ty,no,meta}=D, tm=typeMask(), cm=ctnMask(); const leaves=[];
+  for(const i of S.rows){ leaves.push(i); if(leaves.length>=6) break; }
+  if(!leaves.length) return 'ไม่พบเลขสัญญาที่ค้น';
+  return leaves.map(leaf=>{
+    let t=leaf; // row node: in as-of mode the latest contract with month <= end of period
+    if(f.asof){ const p=pathOf(leaf); t=-1; for(const x of p) if(m[x]<=f.m2) t=x; }
+    const why=[]; const rm=m[root[leaf]];
+    if(t<0){ why.push(`สัญญาแรก ${mlabel(rm)} อยู่หลังสิ้นช่วง ${mlabel(f.m2)}`); }
+    else {
+      const lm=m[t];
+      if(f.asof){ if(rm<f.f1||rm>f.f2) why.push(`เดือนสัญญาแรก ${mlabel(rm)} อยู่นอกช่วง ${mlabel(f.f1)} ถึง ${mlabel(f.f2)}`); if(lm<f.l1||lm>f.l2) why.push(`เดือนสัญญาล่าสุดที่แสดง ${mlabel(lm)} อยู่นอกช่วงเสริม ${mlabel(f.l1)} ถึง ${mlabel(f.l2)}`); }
+      else { if(lm<f.l1||lm>f.l2) why.push(`เดือนเปิดล่าสุด ${mlabel(lm)} (สัญญา ${esc(no[t])}) อยู่นอกช่วง ${mlabel(f.l1)} ถึง ${mlabel(f.l2)}`);
+             if(rm<f.f1||rm>f.f2) why.push(`เดือนสัญญาแรก ${mlabel(rm)} อยู่นอกช่วง ${mlabel(f.f1)} ถึง ${mlabel(f.f2)}`); }
+      if(f.depth!=='all'){const d=Number(f.depth); if(d===5?depth[t]<5:depth[t]!==d) why.push(`จำนวนครั้ง ref ${depth[t]} ไม่ตรงตัวกรอง`);}
+      if(!tm[ty[t]]) why.push(`ประเภทสัญญาล่าสุด “${esc(meta.ty[ty[t]])}” ไม่ได้ติ๊กเลือก`);
+      if(cm&&!cm[D.ctn[t]]) why.push(`ประเภทสินเชื่อ “${esc(meta.ctn[D.ctn[t]])}” ไม่ได้ติ๊กเลือก`);
+      if(f.status>=0&&cl[t]!==f.status) why.push('สถานะการปิดไม่ตรงตัวกรอง');
+      if(f.branch>=0&&br[t]!==f.branch) why.push('สาขาไม่ตรงตัวกรอง');
+      if(f.cs>=0&&D.cs[t]!==f.cs) why.push('สถานะการชำระปัจจุบันไม่ตรงตัวกรอง');
+    }
+    const shown=f.asof&&t>=0?` (แสดงที่สัญญา ${esc(no[t])} ณ สิ้นช่วง)`:'';
+    return `• สายของ ${esc(no[root[leaf]])}${shown}: `+(why.length?'<b>ไม่ผ่าน</b> เพราะ '+why.join(' · '):'ผ่านตัวกรองปัจจุบัน');
+  }).join('<br>');
+}
+
+const LOW_TYPES=['Nano Finance','Personal Unsecured Loan'], BRANCH_TYPE=/จำนำทะเบียน/;
+function anaThreshold(name){ if(BRANCH_TYPE.test(name)) return null; return LOW_TYPES.some(t=>t.toLowerCase()===name.trim().toLowerCase())?20000:55000; }
+function anaAmt(i){ return ($('anaAmt').value==='latest'?D.cost[i]:D.cost[D.root[i]])/100; }
+function analysis(){
+  if(!D.ctn) return null;
+  const by=new Map();
+  for(const i of S.rows){ const name=D.meta.ctn[D.ctn[i]]||'(ไม่ระบุ)'; let e=by.get(name); if(!e){e={name,th:anaThreshold(name),oc:0,os:0,uc:0,us:0};by.set(name,e);}
+    const a=anaAmt(i); if(e.th!==null&&a>e.th){e.oc++;e.os+=a;} else {e.uc++;e.us+=a;} }
+  const list=[...by.values()];
+  const grp=(f)=>list.filter(f).sort((a,b)=>(b.oc+b.uc)-(a.oc+a.uc));
+  const sum=(arr,label,th)=>arr.reduce((s,e)=>({name:label,th,oc:s.oc+e.oc,os:s.os+e.os,uc:s.uc+e.uc,us:s.us+e.us,sub:true}),{oc:0,os:0,uc:0,us:0});
+  const g1=grp(e=>e.th===20000), g2=grp(e=>e.th===55000), g3=grp(e=>e.th===null);
+  const rows=[]; 
+  if(g1.length){ rows.push(...g1); rows.push(sum(g1,'รวมกลุ่มเกณฑ์ 20,000',20000)); }
+  if(g2.length){ rows.push(...g2); rows.push(sum(g2,'รวมกลุ่มเกณฑ์ 55,000',55000)); }
+  if(g3.length){ rows.push(...g3.map(e=>({...e,branch:true}))); }
+  const all=sum(list,'รวมทั้งหมด',undefined); all.tot=true; all.sub=false; rows.push(all);
+  return rows;
+}
+function renderAnalysis(){
+  renderAnalysisCs();
+  const rows=analysis(); $('anaPanel').hidden=!rows; if(!rows) return;
+  const money=v=>v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+  let h='<thead><tr><th>ประเภทสินเชื่อ</th><th class="r">เกณฑ์ (บาท)</th><th class="r">เกินเกณฑ์ (สาย)</th><th class="r">ยอดเกินเกณฑ์</th><th class="r">ไม่เกินเกณฑ์ (สาย)</th><th class="r">ยอดไม่เกินเกณฑ์</th><th class="r">รวม (สาย)</th><th class="r">ยอดรวม</th><th class="r">% สายที่เกิน</th></tr></thead><tbody>';
+  for(const e of rows){ const n=e.oc+e.uc;
+    if(e.branch){ h+=`<tr><td>${esc(e.name)}</td><td class="r">อนุมัติโดยสาขาทั้งหมด</td><td class="r">-</td><td class="r">-</td><td class="r">-</td><td class="r">-</td><td class="r">${fmt(n)}</td><td class="r">${money(e.us)}</td><td class="r">-</td></tr>`; continue; }
+    h+=`<tr class="${e.tot?'tot':e.sub?'sub':''}"><td>${esc(e.name)}</td><td class="r">${e.th?fmt(e.th):'-'}</td><td class="r over">${fmt(e.oc)}</td><td class="r over">${money(e.os)}</td><td class="r">${fmt(e.uc)}</td><td class="r">${money(e.us)}</td><td class="r">${fmt(n)}</td><td class="r">${money(e.os+e.us)}</td><td class="r">${n?(e.oc/n*100).toFixed(1)+'%':'-'}</td></tr>`; }
+  $('ana').innerHTML=h+'</tbody>';
+}
+
+const CS_GROUPS=[['g20o','เกณฑ์ 20,000 · เกิน'],['g20u','เกณฑ์ 20,000 · ไม่เกิน'],['g55o','เกณฑ์ 55,000 · เกิน'],['g55u','เกณฑ์ 55,000 · ไม่เกิน'],['br','จำนำทะเบียนเล่ม (สาขา)'],['all','รวม']];
+let csOff=new Set(); try{ csOff=new Set(JSON.parse(localStorage.getItem('csOff')||'[]')); }catch(e){}
+function saveCsOff(){ try{localStorage.setItem('csOff',JSON.stringify([...csOff]));}catch(e){} }
+let anaOff=new Set(); try{ anaOff=new Set(JSON.parse(localStorage.getItem('anaOff')||'[]')); }catch(e){}
+function buildCsSel(){ if(!D.cs){$('anaCsSel').innerHTML='';return;} $('anaCsSel').innerHTML=D.meta.cs.map(c=>c||'(ไม่ระบุ)').sort().map(c=>`<label><input type="checkbox" class="cssel" data-c="${esc(c)}" ${csOff.has(c)?'':'checked'}>${esc(c)}</label>`).join(''); }
+function buildAnaCols(){ buildCsSel(); $('anaCols').innerHTML=CS_GROUPS.map(([g,n])=>`<label><input type="checkbox" class="anachk" data-g="${g}" ${anaOff.has(g)?'':'checked'}>${n}</label>`).join(''); 
+  const o=$('anaRow'); for(const opt of o.options){ const v=opt.value; opt.hidden=opt.disabled=((v.includes('ctn')&&!D.ctn)||(v.includes('rg')&&!D.rg)); } if(o.selectedOptions[0]&&o.selectedOptions[0].disabled) o.value='cs'; }
+function anaKey(mode,i){
+  const cs=D.meta.cs[D.cs[i]]||'(ไม่ระบุ)', ctn=D.ctn?(D.meta.ctn[D.ctn[i]]||'(ไม่ระบุ)'):'', rg=D.rg?(D.meta.rg[D.rg[i]]||'(ไม่ระบุ)'):'';
+  switch(mode){ case 'cs_ctn': return [cs,ctn]; case 'ctn_cs': return [ctn,cs]; case 'cs_rg': return [cs,rg]; case 'rg_cs': return [rg,cs]; default: return [cs,''] }
+}
+const ANA_MODE_HEAD={cs:['ชั้น (ContractStatus)'],cs_ctn:['ชั้น (ContractStatus)','ประเภทสินเชื่อ'],ctn_cs:['ประเภทสินเชื่อ','ชั้น (ContractStatus)'],cs_rg:['ชั้น (ContractStatus)','ภาค'],rg_cs:['ภาค','ชั้น (ContractStatus)']};
+function analysisCs(){
+  if(!D.ctn||!D.cs) return null;
+  const mode=$('anaRow').value, by=new Map();
+  for(const i of S.rows){ if(csOff.size&&csOff.has(D.meta.cs[D.cs[i]]||'(ไม่ระบุ)')) continue; const [k1,k2]=anaKey(mode,i), key=k1+'\u0001'+k2; let e=by.get(key); if(!e){e={k1,k2};for(const [g] of CS_GROUPS)e[g]=[0,0];by.set(key,e);}
+    const th=anaThreshold(D.meta.ctn[D.ctn[i]]||''), a=anaAmt(i); const g=th===null?'br':(th===20000?'g20':'g55')+(a>th?'o':'u');
+    e[g][0]++; e[g][1]+=a; e.all[0]++; e.all[1]+=a; }
+  const rows=[...by.values()].sort((a,b)=>a.k1<b.k1?-1:a.k1>b.k1?1:a.k2<b.k2?-1:a.k2>b.k2?1:0);
+  const tot={k1:'รวมทั้งหมด',k2:'',tot:true}; for(const [g] of CS_GROUPS) tot[g]=[rows.reduce((s,r)=>s+r[g][0],0),rows.reduce((s,r)=>s+r[g][1],0)];
+  rows.push(tot); return rows;
+}
+function renderAnalysisCs(){
+  const rows=analysisCs(); $('anaCsWrap').hidden=!rows; if(!rows) return;
+  const mode=$('anaRow').value, hd=ANA_MODE_HEAD[mode], two=hd.length>1, G=CS_GROUPS.filter(([g])=>!anaOff.has(g));
+  const money=v=>v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+  let h='<thead><tr>'+hd.map(t=>`<th>${t}</th>`).join('')+G.map(g=>`<th class="r">${g[1]}</th>`).join('')+'</tr></thead><tbody>';
+  let prev=null;
+  for(const r of rows){ const first=r.k1!==prev; prev=r.k1;
+    h+=`<tr class="${r.tot?'tot':''}"><td>${r.tot||first||!two?esc(r.k1):''}</td>${two?`<td>${r.tot?'':esc(r.k2)}</td>`:''}`+G.map(([g])=>`<td class="r ${g.endsWith('o')&&r[g][0]?'over':''}">${r[g][0]?fmt(r[g][0])+'<span class="a">'+money(r[g][1])+'</span>':'-'}</td>`).join('')+'</tr>'; }
+  $('anaCs').innerHTML=h+'</tbody>';
+}
+// themes
+function applySkin(v){ const r=document.documentElement; if(v==='auto') r.removeAttribute('data-skin'); else r.setAttribute('data-skin',v); }
+function initSkin(){ let v='auto'; try{ v=localStorage.getItem('skin')||'auto'; }catch(e){} if(![...$('skin').options].some(o=>o.value===v)) v='auto'; $('skin').value=v; applySkin(v);
+  $('skin').addEventListener('change',()=>{ const x=$('skin').value; applySkin(x); try{localStorage.setItem('skin',x);}catch(e){} }); }
+/* ---------- Excel export (minimal xlsx writer) ---------- */
+const CRC=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0;}return t;})();
+function crc32(u8){let c=0xFFFFFFFF;for(let i=0;i<u8.length;i++)c=CRC[(c^u8[i])&255]^(c>>>8);return (c^0xFFFFFFFF)>>>0;}
+async function deflateRaw(u8){
+  if(typeof CompressionStream==='undefined') return null;
+  const cs=new CompressionStream('deflate-raw'); const w=cs.writable.getWriter(); w.write(u8); w.close();
+  return new Uint8Array(await new Response(cs.readable).arrayBuffer());
+}
+async function makeZip(files){ // files: [{name, data:Uint8Array}]
+  const enc=new TextEncoder(), parts=[], cen=[]; let off=0;
+  for(const f of files){
+    const nm=enc.encode(f.name), crc=crc32(f.data); let comp=await deflateRaw(f.data), method=8;
+    if(!comp){comp=f.data;method=0;}
+    const lh=new DataView(new ArrayBuffer(30)); lh.setUint32(0,0x04034b50,true);lh.setUint16(4,20,true);lh.setUint16(6,0x0800,true);lh.setUint16(8,method,true);
+    lh.setUint32(14,crc,true);lh.setUint32(18,comp.length,true);lh.setUint32(22,f.data.length,true);lh.setUint16(26,nm.length,true);
+    parts.push(new Uint8Array(lh.buffer),nm,comp);
+    const ch=new DataView(new ArrayBuffer(46)); ch.setUint32(0,0x02014b50,true);ch.setUint16(4,20,true);ch.setUint16(6,20,true);ch.setUint16(8,0x0800,true);ch.setUint16(10,method,true);
+    ch.setUint32(16,crc,true);ch.setUint32(20,comp.length,true);ch.setUint32(24,f.data.length,true);ch.setUint16(28,nm.length,true);ch.setUint32(42,off,true);
+    cen.push(new Uint8Array(ch.buffer),nm); off+=30+nm.length+comp.length;
+  }
+  let cs=0; for(const c of cen) cs+=c.length;
+  const end=new DataView(new ArrayBuffer(22)); end.setUint32(0,0x06054b50,true);end.setUint16(8,files.length,true);end.setUint16(10,files.length,true);end.setUint32(12,cs,true);end.setUint32(16,off,true);
+  return new Blob([...parts,...cen,new Uint8Array(end.buffer)],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+}
+const colName=n=>{let s='';n++;while(n>0){const r=(n-1)%26;s=String.fromCharCode(65+r)+s;n=Math.floor((n-1)/26);}return s;};
+const xesc=s=>String(s).replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g,'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+// cell: string | number | {d:cdValue} (date) | null
+function sheetXml(header,rows,widths){
+  const cols=header.length; const out=['<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews><cols>'];
+  for(let c=0;c<cols;c++) out.push(`<col min="${c+1}" max="${c+1}" width="${widths&&widths[c]||16}" customWidth="1"/>`);
+  out.push('</cols><sheetData>');
+  const cell=(v,r,c,st)=>{const ref=colName(c)+r; if(v===null||v===undefined||v==='')return '';
+    if(typeof v==='number') return `<c r="${ref}"${st?` s="${st}"`:''}><v>${v}</v></c>`;
+    return `<c r="${ref}" t="inlineStr"${st?` s="${st}"`:''}><is><t xml:space="preserve">${xesc(v)}</t></is></c>`;};
+  out.push('<row r="1">'+header.map((h,c)=>cell(h,1,c,3)).join('')+'</row>');
+  for(let r=0;r<rows.length;r++){const row=rows[r],rn=r+2; let s=`<row r="${rn}">`;
+    for(let c=0;c<row.length;c++){const v=row[c];
+      if(v&&typeof v==='object'){ if(v.d) s+=cell(v.d-1+SERIAL_2016,rn,c,1); else if(v.n!==undefined) s+=cell(v.n,rn,c,2); }
+      else s+=cell(v,rn,c,0);}
+    out.push(s+'</row>');}
+  out.push('</sheetData></worksheet>'); return out.join('');
+}
+const STYLES='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><numFmts count="2"><numFmt numFmtId="164" formatCode="dd/mm/yyyy"/><numFmt numFmtId="165" formatCode="#,##0.00"/></numFmts><fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font></fonts><fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFDCEFEC"/></patternFill></fill></fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="4"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="164" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/><xf numFmtId="165" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/><xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/></cellXfs></styleSheet>';
+
+async function doExport(){
+  const R=S.rows; if(!R.length){$('note').textContent='ไม่มีข้อมูลให้ export';return;}
+  const dl=(typeof claude!=='undefined'&&claude&&claude.use)?await claude.use('downloads').catch(()=>null):null;
+  const save=dl?(o=>dl.save(o)):(async o=>{const a=document.createElement('a');a.href=URL.createObjectURL(o.data);a.download=o.filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),15000);});
+  const btn=$('exp'); btn.disabled=true; btn.textContent='กำลังสร้างไฟล์…';
+  await new Promise(r=>setTimeout(r,30));
+  try{
+    const {m,root,depth,cost,cd,par,cl,ag,ty,br,no,meta}=D; const f=getFilter();
+    let maxD=0; for(let k=0;k<R.length;k++) if(depth[R[k]]>maxD) maxD=depth[R[k]];
+    const ct=D.ct, cs=D.cs, dv=x=>x?{d:x}:'';
+    const C1=[ // [header,width,fn(leaf)]
+      ['สัญญาแรก',16,i=>no[root[i]]],['เดือนสัญญาแรก',12,i=>mlabel(m[root[i]])]];
+    if(ct) C1.push(['วันทำสัญญา (สัญญาแรก)',16,i=>dv(ct[root[i]])]);
+    C1.push(['ประเภทสัญญาแรก',24,i=>meta.ty[ty[root[i]]]||''],['ยอดจัด+ประกัน (สัญญาแรก)',18,i=>({n:cost[root[i]]/100})],['จำนวนครั้ง ref',10,i=>depth[i]],
+      ['สัญญาล่าสุด',18,i=>no[i]],['เดือนเปิดล่าสุด',12,i=>mlabel(m[i])]);
+    if(ct) C1.push(['วันทำสัญญา (ล่าสุด)',16,i=>dv(ct[i])]);
+    if(D.ctn) C1.push(['ประเภทสินเชื่อ NL_ContractTypeName (ล่าสุด)',26,i=>meta.ctn[D.ctn[i]]||''],['เทียบเกณฑ์อนุมัติ ('+$('anaAmt').selectedOptions[0].text+')',30,i=>{const th=anaThreshold(meta.ctn[D.ctn[i]]||''); return th===null?'อนุมัติโดยสาขา':(anaAmt(i)>th?'เกิน ':'ไม่เกิน ')+fmt(th);}]);
+    C1.push(['ประเภทสัญญาล่าสุด',24,i=>meta.ty[ty[i]]||''],['สถานะการปิด (ล่าสุด)',22,i=>meta.cl[cl[i]]||''],['ชั้นหนี้ ณ ปิด (ล่าสุด)',26,i=>meta.ag[ag[i]]||'']);
+    if(cs) C1.push(['สถานะการชำระปัจจุบัน (ContractStatus)',22,i=>meta.cs[cs[i]]||'']);
+    if(D.rg) C1.push(['ภาค (ล่าสุด)',16,i=>meta.rg[D.rg[i]]||'']);
+    C1.push(['วันที่ปิด (ล่าสุด)',14,i=>dv(cd[i])],['สาขา (ล่าสุด)',22,i=>meta.br[br[i]]||'']);
+    if(S.after) C1.push(['ref ต่อหลังสิ้นช่วง (เลขสัญญา)',22,i=>S.after[i]>=0?no[S.after[i]]:''],['เดือนของสัญญาที่ ref ต่อ',14,i=>S.after[i]>=0?mlabel(m[S.after[i]]):'']);
+    const head1=C1.map(c=>c[0]), w1=C1.map(c=>c[1]);
+    for(let k=1;k<=maxD;k++){ head1.push('วันที่ ref ครั้งที่ '+k,'เลขสัญญาครั้งที่ '+k,'ประเภทครั้งที่ '+k,'ref ครั้งที่ '+k+' ไปเป็นประเภท'); w1.push(14,18,24,30); }
+    const rows1=[], rows2=[];
+    for(let k=0;k<R.length;k++){const i=R[k], r=root[i], p=pathOf(i);
+      const row=C1.map(c=>c[2](i));
+      for(let h=0;h<p.length-1;h++){const x=p[h]; row.push(dv(seqDate(x)),no[x],meta.ty[ty[x]]||'',meta.ty[ty[p[h+1]]]||'');}
+      rows1.push(row);
+      p.forEach((x,h)=>{ const r2=[no[r],h,no[x],mlabel(m[x])]; if(ct) r2.push(dv(ct[x]));
+        r2.push(h===0?'':dv(refDate(x))); if(ct) r2.push(h===0?'':dv(cd[par[x]]));
+        r2.push(meta.ty[ty[x]]||'',{n:cost[r]/100},{n:cost[x]/100},meta.cl[cl[x]]||'',meta.ag[ag[x]]||''); if(cs) r2.push(meta.cs[cs[x]]||'');
+        if(D.rg) r2.push(meta.rg[D.rg[x]]||''); r2.push(dv(cd[x]),meta.br[br[x]]||''); rows2.push(r2); });
+    }
+    const head2=['สัญญาแรก (รหัสสาย)','ทอดที่ (0 = สัญญาแรก)','เลขสัญญา','เดือนเปิด'].concat(ct?['วันทำสัญญา']:[],['วันที่ ref'+(ct?' (วันทำสัญญาใหม่)':' (วันปิดสัญญาก่อนหน้า)')],ct?['วันปิดสัญญาก่อนหน้า']:[],['ประเภท','ยอดจัด+ประกัน (สัญญาแรก)','ยอดจัด+ประกัน (ของสัญญานี้)','สถานะการปิด','ชั้นหนี้ ณ ปิด'],cs?['สถานะการชำระปัจจุบัน']:[],D.rg?['ภาค']:[],['วันที่ปิด','สาขา']);
+    const w2=head2.map(()=>18);
+    const crit=[['แหล่งข้อมูล',S.source+' (ถึงเดือน '+mlabel(D.maxM)+')'],['ช่วงที่แสดง/export',S.search?('ค้นหาเลขสัญญา: '+$('q').value.trim()):(f.asof?'สัญญาแรกอยู่ในช่วง '+mlabel(f.f1)+' ถึง '+mlabel(f.f2)+' | สัญญาล่าสุด = สัญญาล่าสุดของสายที่เปิดไม่เกินเดือน '+mlabel(f.f2)+' (สัญญาที่ ref ต่อหลังจากนั้นแยกไว้ในคอลัมน์ ref ต่อหลังสิ้นช่วง)':'เดือนสัญญาแรก '+mlabel(f.f1)+' ถึง '+mlabel(f.f2)+' | เดือนเปิดล่าสุด '+mlabel(f.l1)+' ถึง '+mlabel(f.l2)+' (ช่วงหลักอิงตาม'+(f.first?'สัญญาแรก':'สัญญาล่าสุด')+')')],['จำนวนครั้ง ref',$('depth').selectedOptions[0].text],['ประเภทสัญญาล่าสุด',S.search?'-':typeLabel()],['ประเภทสินเชื่อ (NL_ContractTypeName)',S.search?'-':ctnLabel()],['สถานะการปิด',$('status').selectedOptions[0].text],['สถานะการชำระปัจจุบัน',D.cs?$('cstat').selectedOptions[0].text:'(ไม่มีในข้อมูล)'],['สาขา',$('branch').selectedOptions[0].text],['ภาค (NL_RegionName)',D.rg?$('region').selectedOptions[0].text:'(ไม่มีในข้อมูล)'],
+      ['การเชื่อมสายสัญญา',$('link').selectedOptions[0].text],['จำนวนสายสัญญา',R.length],['หมายเหตุ','1 แถว = 1 สายสัญญา (นับจากสัญญาล่าสุด) · คอลัมน์ ครั้งที่ k = สัญญาก่อนหน้าที่ถูก ref (ครั้งที่ 1 = สัญญาแรก) ไม่รวมสัญญาปัจจุบัน ซึ่งอยู่ในคอลัมน์ สัญญาล่าสุด แล้ว · วันที่ ref = '+(D.ct?'วันทำสัญญา (NL_ContractDate) ของสัญญานั้น':'วันที่ปิดของสัญญาก่อนหน้า (ไฟล์นี้ไม่มี NL_ContractDate จึงไม่มีวันที่ของครั้งที่ 1)')+' · ยอดจัด+ประกันในชีตสรุปใช้ของสัญญาแรก']];
+        const x1=sheetXml(head1,rows1,w1), x2=sheetXml(head2,rows2,w2), x3=sheetXml(['เงื่อนไข','ค่า'],crit,[24,100]);
+    const AR=analysis()||[]; const r2=v=>({n:Math.round(v*100)/100}); const x4=sheetXml(['ประเภทสินเชื่อ','เกณฑ์ (บาท)','เกินเกณฑ์ (สาย)','ยอดเกินเกณฑ์','ไม่เกินเกณฑ์ (สาย)','ยอดไม่เกินเกณฑ์','รวม (สาย)','ยอดรวม'],
+      AR.map(a=>a.branch?[a.name,'อนุมัติโดยสาขาทั้งหมด','','','','',a.oc+a.uc,r2(a.us)]:[a.name,a.th?a.th:'',a.oc,r2(a.os),a.uc,r2(a.us),a.oc+a.uc,r2(a.os+a.us)]).concat([[],['ยอดที่ใช้: '+$('anaAmt').selectedOptions[0].text+' · ประเภทสินเชื่อของสัญญาล่าสุด · เกิน = มากกว่าเกณฑ์']]),[36,22,16,18,18,18,12,18]);
+    const enc=new TextEncoder();
+    const CR=analysisCs(); const _hd=ANA_MODE_HEAD[$('anaRow').value], _G=CS_GROUPS.filter(([g])=>!anaOff.has(g)); const hdr5=_hd.slice(); for(const [,n] of _G) hdr5.push(n+' (สาย)',n+' (ยอด)');
+    const x5=sheetXml(hdr5,(CR||[]).map(r=>{const o=[r.k1]; if(_hd.length>1) o.push(r.tot?'':r.k2); for(const [g] of _G) o.push(r[g][0],r2(r[g][1])); return o;}).concat([[],['แยกแถวตาม: '+$('anaRow').selectedOptions[0].text+' · ชั้นที่ไม่แสดง: '+(csOff.size?[...csOff].join(', '):'-')+' · ยอดที่ใช้: '+$('anaAmt').selectedOptions[0].text+' · ชั้น = ContractStatus ของสัญญาล่าสุด']]),[30,26].concat(Array(12).fill(16)));
+    const wb='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="สายสัญญา" sheetId="1" r:id="rId1"/><sheet name="รายละเอียดแต่ละทอด" sheetId="2" r:id="rId2"/><sheet name="วิเคราะห์ยอดตามเกณฑ์" sheetId="4" r:id="rId5"/><sheet name="วิเคราะห์ตามชั้น" sheetId="5" r:id="rId6"/><sheet name="เงื่อนไข" sheetId="3" r:id="rId3"/></sheets></workbook>';
+    const rel=(i,t,tg)=>`<Relationship Id="rId${i}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/${t}" Target="${tg}"/>`;
+    const files=[
+      ['[Content_Types].xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/worksheets/sheet2.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/worksheets/sheet3.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/worksheets/sheet4.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/worksheets/sheet5.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>'],
+      ['_rels/.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+rel(1,'officeDocument','xl/workbook.xml')+'</Relationships>'],
+      ['xl/workbook.xml',wb],
+      ['xl/_rels/workbook.xml.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+rel(1,'worksheet','worksheets/sheet1.xml')+rel(2,'worksheet','worksheets/sheet2.xml')+rel(3,'worksheet','worksheets/sheet3.xml')+rel(4,'styles','styles.xml')+rel(5,'worksheet','worksheets/sheet4.xml')+rel(6,'worksheet','worksheets/sheet5.xml')+'</Relationships>'],
+      ['xl/styles.xml',STYLES],['xl/worksheets/sheet1.xml',x1],['xl/worksheets/sheet2.xml',x2],['xl/worksheets/sheet3.xml',x3],['xl/worksheets/sheet4.xml',x4],['xl/worksheets/sheet5.xml',x5]
+    ].map(([name,s])=>({name,data:enc.encode(s)}));
+    const blob=await makeZip(files);
+    const tag=S.search?'search':((f.asof?'asof_':f.first?'first_':'latest_')+mlabel(f.m1)+'_to_'+mlabel(f.m2));
+    await save({filename:`refinance_chain_${tag}.xlsx`,data:blob});
+    $('note').textContent=`สร้างไฟล์แล้ว ${fmt(R.length)} สาย`;
+  }catch(err){
+    $('note').textContent=(err&&err.code==='declined')?'ยกเลิกการบันทึกไฟล์':'สร้างไฟล์ไม่สำเร็จ: '+((err&&err.message)||err);
+  }finally{btn.disabled=false;btn.textContent='Export Excel';}
+}
+wire();
+</script></body></html>
