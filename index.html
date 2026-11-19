@@ -10,7 +10,7 @@
 /* layout: sticky filter bar over summary tiles, two charts, then a wide scrolling table with expandable chain rows */
 :root{
   --bg:#f4f6f5; --surface:#ffffff; --ink:#14201f; --muted:#5d6b69; --line:#d9e0de;
-  --on-accent:#fff; --accent:#0b6b63; --accent-soft:#dcefec; --warm:#b45309; --warm-soft:#fbead6; --ok:#2f7d4f;
+  --on-accent:#fff; --accent:#0b6b63; --accent-soft:#dcefec; --warm:#b45309; --warm-soft:#fbead6; --ok:#2f7d4f; --s3:#7a5cc4; --s4:#3f7fc4; --s5:#9a7b4f;
   --font:'IBM Plex Sans Thai',system-ui,sans-serif; --mono:'IBM Plex Mono',ui-monospace,monospace;
 }
 @media (prefers-color-scheme: dark){
@@ -67,10 +67,10 @@ h2{font-size:14px;margin:0 0 10px;font-weight:600}
 .dist .t i{position:absolute;left:0;top:0;bottom:0;background:var(--accent);border-radius:4px}
 .dist .r:nth-child(n+2) .t i{background:var(--warm)} .dist .r:nth-child(n+2) .t{background:var(--warm-soft)}
 .dist .num{text-align:right;font-variant-numeric:tabular-nums;color:var(--muted)}
-.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px}
+.tablewrap{overflow:auto;max-height:72vh;border:1px solid var(--line);border-radius:8px}
 table{border-collapse:collapse;width:100%;font-size:13px;font-variant-numeric:tabular-nums}
 th,td{padding:7px 10px;text-align:left;white-space:nowrap;border-bottom:1px solid var(--line)}
-th{position:sticky;top:0;background:var(--surface);font-size:12px;color:var(--muted);font-weight:500;user-select:none}
+th{position:sticky;top:0;z-index:2;background:var(--surface);box-shadow:inset 0 -1px 0 var(--line);font-size:12px;color:var(--muted);font-weight:500;user-select:none}
 th.sortable{cursor:pointer} th.sortable:hover{color:var(--accent)}
 th .ar{color:var(--accent)}
 td.mono,.mono{font-family:var(--mono);font-size:12.5px}
@@ -133,6 +133,15 @@ tr.detail td{background:var(--bg);padding:10px 14px 14px;white-space:normal}
 .cfrow th{padding:4px 6px;top:33px;background:var(--surface)}
 .cfrow input.cf{width:100%;min-width:70px;font-size:12px;padding:3px 6px;border:1px solid var(--line);border-radius:4px;background:var(--bg);color:var(--ink)}
 .cfclear{padding:2px 7px;font-size:12px}
+.vbar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.seg button{border:0;border-radius:0;padding:5px 12px;background:var(--surface)}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
+.chartbox{border:1px solid var(--line);border-radius:8px;padding:10px;overflow-x:auto;background:var(--surface)}
+.chartbox svg text{fill:var(--muted);font:11px var(--font)}
+.chartbox .lg{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin:0 0 6px}
+.chartbox .lg i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
 </style>
 </head>
 <body>
@@ -181,14 +190,14 @@ tr.detail td{background:var(--bg);padding:10px 14px 14px;white-space:normal}
     <div class="panel" id="anaPanel" style="margin-top:16px">
       <div class="anahead"><h2>วิเคราะห์ยอดจัด+ประกัน เทียบเกณฑ์อนุมัติ <span class="hint">(จากสายที่แสดงอยู่)</span></h2>
         <div class="f"><label for="anaAmt">ยอดที่ใช้</label><select id="anaAmt"><option value="first">ยอดจัด+ประกัน สัญญาแรก</option><option value="latest">ยอดจัด+ประกัน สัญญาล่าสุด</option></select></div></div>
-      <div class="tablewrap"><table id="ana"></table></div>
+      <div class="vbar" data-a="1"></div><div class="tablewrap" id="anaTW"><table id="ana"></table></div><div class="chartbox" id="anaChart" hidden></div>
       <div id="anaCsWrap"><h2 style="margin:16px 0 8px">ผลงานจัดเก็บ แยกตามชั้น (ContractStatus ของสัญญาล่าสุด) <span class="hint">แต่ละช่อง: จำนวนสาย / ยอดเงิน</span></h2>
       <div class="cfg"><div class="f" style="flex:0 1 260px"><label for="anaRow">แยกแถวตาม</label><select id="anaRow"><option value="cs">ชั้น</option><option value="cs_ctn">ชั้น × ประเภทสินเชื่อ</option><option value="ctn_cs">ประเภทสินเชื่อ × ชั้น</option><option value="cs_rg">ชั้น × ภาค</option><option value="rg_cs">ภาค × ชั้น</option></select></div>
         <div style="flex:1 1 420px"><span class="lab">คอลัมน์ที่แสดง</span><div class="chips grid3" id="anaCols"></div></div></div>
       <details class="cssd" open><summary class="lab" style="cursor:pointer;margin-top:12px">ชั้นที่แสดง <span id="csCount" class="hint"></span></summary>
         <div class="trow" style="margin:6px 0"><button id="csAll">เลือกทุกชั้น</button><button id="csOpen">เฉพาะชั้นที่ยังไม่ปิด</button><button id="csClosed">เฉพาะสถานะปิด</button><button id="csNone">ล้างที่เลือก</button></div>
         <div id="anaCsSel" class="csgroups"></div></details>
-      <div class="tablewrap" style="margin-top:8px"><table id="anaCs"></table></div></div>
+      <div class="vbar" data-a="2" style="margin-top:10px"></div><div class="tablewrap" id="anaCsTW" style="margin-top:8px"><table id="anaCs"></table></div><div class="chartbox" id="anaCsChart" hidden></div></div>
       <div class="hint" style="margin-top:6px">ประเภทสินเชื่อใช้ของสัญญาล่าสุด · Nano Finance และ Personal Unsecured Loan เกณฑ์ 20,000 บาท · ประเภทอื่นเกณฑ์ 55,000 บาท · "เกิน" คือมากกว่าเกณฑ์ ยอดเท่ากับเกณฑ์นับเป็น "ไม่เกิน" · สินเชื่อเงินด่วน (จำนำทะเบียนเล่ม) อนุมัติโดยสาขาทั้งหมด ไม่แยกตามเกณฑ์</div>
     </div>
     <div class="panel" style="margin-top:16px">
@@ -694,6 +703,7 @@ function analysis(){
 }
 function renderAnalysis(){
   renderAnalysisCs();
+  setTimeout(()=>drawAna(1),0);
   const rows=analysis(); $('anaPanel').hidden=!rows; if(!rows) return;
   const money=v=>v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
   let h='<thead><tr><th>ประเภทสินเชื่อ</th><th class="r">เกณฑ์ (บาท)</th><th class="r">เกินเกณฑ์ (สาย)</th><th class="r">ยอดเกินเกณฑ์</th><th class="r">ไม่เกินเกณฑ์ (สาย)</th><th class="r">ยอดไม่เกินเกณฑ์</th><th class="r">รวม (สาย)</th><th class="r">ยอดรวม</th><th class="r">% สายที่เกิน</th></tr></thead><tbody>';
@@ -741,6 +751,7 @@ function renderAnalysisCs(){
   for(const r of rows){ const first=r.k1!==prev; prev=r.k1;
     h+=`<tr class="${r.tot?'tot':''}"><td>${r.tot||first||!two?esc(r.k1):''}</td>${two?`<td>${r.tot?'':esc(r.k2)}</td>`:''}`+G.map(([g])=>`<td class="r ${g.endsWith('o')&&r[g][0]?'over':''}">${r[g][0]?fmt(r[g][0])+'<span class="a">'+money(r[g][1])+'</span>':'-'}</td>`).join('')+'</tr>'; }
   $('anaCs').innerHTML=h+'</tbody>';
+  setTimeout(()=>drawAna(2),0);
 }
 // themes
 function applySkin(v){ const r=document.documentElement; if(v==='auto') r.removeAttribute('data-skin'); else r.setAttribute('data-skin',v); }
@@ -765,12 +776,62 @@ function renderHead(COLS){
   const top='<tr>'+COLS.map(c=>`<th class="${c.cls} ${c.k?'sortable':''}" ${c.k?`data-k="${c.k}"`:''}>${c.t}${c.k&&S.sort===c.k?` <span class="ar">${S.dir<0?'↓':'↑'}</span>`:''}</th>`).join('')+'</tr>';
   const fr='<tr class="cfrow">'+COLS.map(c=>c.id==='no'?`<th><button class="cfclear" title="ล้างการค้นหาทุกคอลัมน์" aria-label="ล้างการค้นหาทุกคอลัมน์">✕</button></th>`:`<th><input class="cf" data-id="${c.id}" type="search" placeholder="ค้นหา" aria-label="ค้นหาในคอลัมน์ ${esc(c.t)}" value="${esc(colF[c.id]||'')}"></th>`).join('')+'</tr>';
   $('thead').innerHTML=top+fr;
+  const h1=$('thead').rows[0].offsetHeight; for(const th of $('thead').rows[1].cells) th.style.top=h1+'px';
 }
 (function wireColF(){
   let t=null;
   document.addEventListener('input',e=>{ const x=e.target; if(!x.classList||!x.classList.contains('cf')) return; colF[x.dataset.id]=x.value.trim(); clearTimeout(t); t=setTimeout(()=>{S.page=0;S.open.clear();refresh();},250); });
   document.addEventListener('click',e=>{ if(e.target.closest&&e.target.closest('.cfclear')){ colF={}; document.querySelectorAll('.cf').forEach(i=>i.value=''); S.page=0; refresh(); } });
 })();
+
+// ---- charts for the two analysis tables ----
+const AV={1:{view:'table',metric:'n'},2:{view:'table',metric:'n'}};
+try{ const s=JSON.parse(localStorage.getItem('anaView')||'null'); if(s){AV[1]=s[1]||AV[1];AV[2]=s[2]||AV[2];} }catch(e){}
+function vbarHtml(a){ const v=AV[a]; const b=(k,val,t)=>`<button data-a="${a}" data-k="${k}" data-v="${val}" aria-pressed="${v[k]===val}">${t}</button>`;
+  return `<span class="seg">${b('view','table','ตาราง')}${b('view','bar','กราฟแท่ง')}${b('view','line','กราฟเส้น')}</span>`+(v.view!=='table'?`<span class="seg">${b('metric','n','จำนวนสาย')}${b('metric','amt','ยอดเงิน')}</span>`:''); }
+function chartData(a){
+  if(a===1){ const rows=(analysis()||[]).filter(r=>!r.sub&&!r.tot);
+    return {cats:rows.map(r=>r.name),series:[
+      {name:'เกินเกณฑ์',color:'var(--warm)',v:rows.map(r=>r.branch?0:(AV[1].metric==='n'?r.oc:r.os))},
+      {name:'ไม่เกินเกณฑ์',color:'var(--accent)',v:rows.map(r=>r.branch?0:(AV[1].metric==='n'?r.uc:r.us))},
+      {name:'จำนำทะเบียน (สาขา)',color:'var(--s3)',v:rows.map(r=>r.branch?(AV[1].metric==='n'?r.oc+r.uc:r.us):0)}].filter(s=>s.v.some(x=>x))}; }
+  const rows=(analysisCs()||[]).filter(r=>!r.tot), two=ANA_MODE_HEAD[$('anaRow').value].length>1;
+  const cols={g20o:'var(--warm)',g20u:'var(--accent)',g55o:'var(--s5)',g55u:'var(--s4)',br:'var(--s3)',all:'var(--ink)'};
+  return {cats:rows.map(r=>two?r.k1+' · '+r.k2:r.k1),series:CS_GROUPS.filter(([g])=>!anaOff.has(g)).map(([g,n])=>({name:n,color:cols[g],v:rows.map(r=>AV[2].metric==='n'?r[g][0]:r[g][1])}))};
+}
+function niceMax(x){ if(x<=0) return 1; const p=Math.pow(10,Math.floor(Math.log10(x))), f=x/p; return (f<=1?1:f<=2?2:f<=2.5?2.5:f<=5?5:10)*p; }
+function shortNum(v){ const a=Math.abs(v); return a>=1e9?(v/1e9).toFixed(a>=1e10?0:1)+'B':a>=1e6?(v/1e6).toFixed(a>=1e7?0:1)+'M':a>=1e3?(v/1e3).toFixed(a>=1e4?0:1)+'K':String(Math.round(v)); }
+function chartSvg(d,type,box,metric){
+  const C=d.cats.length, S=d.series.length; if(!C||!S) return '<div class="hint">ไม่มีข้อมูลสำหรับกราฟ</div>';
+  const padL=58,padR=16,padT=12, labLen=Math.min(26,Math.max(...d.cats.map(c=>c.length)));
+  const padB=Math.min(150,24+labLen*4.4);
+  const gw=type==='bar'?Math.max(28,S*14+12):Math.max(36,10);
+  const W=Math.max(box.clientWidth-22,padL+padR+C*gw), H=360, ih=H-padT-padB, iw=W-padL-padR, step=iw/C;
+  let mx=0; for(const s of d.series) for(const v of s.v) if(v>mx) mx=v; mx=niceMax(mx);
+  const y=v=>padT+ih-(v/mx)*ih; let g='';
+  for(let t=0;t<=5;t++){ const v=mx*t/5, yy=y(v); g+=`<line x1="${padL}" x2="${W-padR}" y1="${yy}" y2="${yy}" stroke="var(--line)" stroke-width="1"/><text x="${padL-6}" y="${yy+3}" text-anchor="end">${shortNum(v)}</text>`; }
+  const fv=v=>metric==='n'?fmt(v)+' สาย':v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})+' บาท';
+  if(type==='bar'){ const bw=Math.max(3,Math.min(18,(step-10)/S));
+    d.series.forEach((s,k)=>{ s.v.forEach((v,i)=>{ if(!v) return; const x=padL+i*step+(step-bw*S)/2+k*bw;
+      g+=`<rect x="${x.toFixed(1)}" y="${y(v).toFixed(1)}" width="${(bw-1).toFixed(1)}" height="${(padT+ih-y(v)).toFixed(1)}" fill="${s.color}" rx="1.5"><title>${esc(d.cats[i])}
+${esc(s.name)}: ${fv(v)}</title></rect>`; }); }); }
+  else { d.series.forEach(s=>{ const pts=s.v.map((v,i)=>[padL+i*step+step/2,y(v)]);
+      g+=`<polyline fill="none" stroke="${s.color}" stroke-width="2" stroke-linejoin="round" points="${pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')}"/>`;
+      pts.forEach((p,i)=>{ g+=`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3.2" fill="${s.color}"><title>${esc(d.cats[i])}
+${esc(s.name)}: ${fv(s.v[i])}</title></circle>`; }); }); }
+  d.cats.forEach((c,i)=>{ const x=padL+i*step+step/2, t=c.length>26?c.slice(0,25)+'…':c; g+=`<text transform="translate(${x.toFixed(1)},${padT+ih+12}) rotate(-40)" text-anchor="end">${esc(t)}<title>${esc(c)}</title></text>`; });
+  g+=`<line x1="${padL}" x2="${W-padR}" y1="${padT+ih}" y2="${padT+ih}" stroke="var(--muted)" stroke-width="1"/>`;
+  const lg='<div class="lg">'+d.series.map(s=>`<span><i style="background:${s.color}"></i>${esc(s.name)}</span>`).join('')+`<span>หน่วย: ${metric==='n'?'จำนวนสาย':'บาท'}</span></div>`;
+  return lg+`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="กราฟ">${g}</svg>`;
+}
+function drawAna(a){
+  const bar=document.querySelector(`.vbar[data-a="${a}"]`); if(!bar) return; bar.innerHTML=vbarHtml(a);
+  const tw=$(a===1?'anaTW':'anaCsTW'), cb=$(a===1?'anaChart':'anaCsChart'), v=AV[a];
+  if(v.view==='table'){ tw.hidden=false; cb.hidden=true; return; }
+  tw.hidden=true; cb.hidden=false; cb.innerHTML=chartSvg(chartData(a),v.view,cb,v.metric);
+}
+document.addEventListener('click',e=>{ const b=e.target.closest&&e.target.closest('.vbar button'); if(!b) return; const a=+b.dataset.a;
+  AV[a][b.dataset.k]=b.dataset.v; try{localStorage.setItem('anaView',JSON.stringify(AV));}catch(x){} drawAna(a); });
 /* ---------- Excel export (minimal xlsx writer) ---------- */
 const CRC=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0;}return t;})();
 function crc32(u8){let c=0xFFFFFFFF;for(let i=0;i<u8.length;i++)c=CRC[(c^u8[i])&255]^(c>>>8);return (c^0xFFFFFFFF)>>>0;}
