@@ -130,6 +130,9 @@ tr.detail td{background:var(--bg);padding:10px 14px 14px;white-space:normal}
 @media(max-width:800px){.csgroups{grid-template-columns:1fr}}
 .csgroups .gh{font-size:12px;color:var(--muted);font-weight:600;margin-bottom:4px}
 .csgroups .chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:6px 12px}
+.cfrow th{padding:4px 6px;top:33px;background:var(--surface)}
+.cfrow input.cf{width:100%;min-width:70px;font-size:12px;padding:3px 6px;border:1px solid var(--line);border-radius:4px;background:var(--bg);color:var(--ink)}
+.cfclear{padding:2px 7px;font-size:12px}
 </style>
 </head>
 <body>
@@ -467,7 +470,7 @@ function wire(){
   let t=null; $('q').addEventListener('input',()=>{clearTimeout(t);t=setTimeout(()=>{S.page=0;S.open.clear();doSearch();refresh();},250);});
   $('pAll').onclick=()=>{setMY($('lmF1'),$('lyF1'),0);setMY($('lmF2'),$('lyF2'),D.maxM);chg();};
   $('pYear').onclick=()=>{setMY($('lmF1'),$('lyF1'),Math.floor(D.maxM/12)*12);setMY($('lmF2'),$('lyF2'),D.maxM);chg();};
-  $('pReset').onclick=()=>{resetRange();$('depth').value='all';$('status').value='-1';$('branch').value='-1';if(D.cs)$('cstat').value='-1'; if(D.rg)$('region').value='-1';$('q').value='';S.search=null;document.querySelectorAll('.tchk,.cchk').forEach(c=>c.checked=true);chg();};
+  $('pReset').onclick=()=>{colF={};resetRange();$('depth').value='all';$('status').value='-1';$('branch').value='-1';if(D.cs)$('cstat').value='-1'; if(D.rg)$('region').value='-1';$('q').value='';S.search=null;document.querySelectorAll('.tchk,.cchk').forEach(c=>c.checked=true);chg();};
   $('prev').onclick=()=>{if(S.page>0){S.page--;renderTable();}};
   $('next').onclick=()=>{if((S.page+1)*PAGE<S.rows.length){S.page++;renderTable();}};
   $('exp').onclick=doExport;
@@ -558,7 +561,7 @@ function sortKey(k){
 }
 function sortRows(){ const kf=sortKey(S.sort), d=S.dir; S.rows.sort((a,b)=>{const x=kf(a),y=kf(b); return x===y?(a-b):(x<y?-d:d);}); }
 function refresh(){
-  S.rows=filterRows(); sortRows();
+  S.rows=applyColFilters(filterRows()); sortRows();
   const f=getFilter();
   const bn=basisNames(f.first), full=(f.o1<=0&&f.o2>=D.maxM);
   $('lab1').textContent='ช่วงเดือน'+bn[0]+' (ใช้แสดงและ export)'; $('lab2').textContent='ช่วงเดือน'+bn[1]+' (ไม่บังคับ)';
@@ -607,7 +610,7 @@ function cols(){ return TBL.filter(c=>tblAvail(c[0])&&!hiddenCols.has(c[0])).map
 function renderTable(){
   const COLS=cols(); const R=S.rows, {m,root,depth,cost,cd,par,cl,ag,br,ty,no,meta}=D;
   if(!COLS.some(c=>c.k===S.sort)&&S.sort!=='lm') {}
-  $('thead').innerHTML='<tr>'+COLS.map(c=>`<th class="${c.cls} ${c.k?'sortable':''}" ${c.k?`data-k="${c.k}"`:''}>${c.t}${c.k&&S.sort===c.k?` <span class="ar">${S.dir<0?'↓':'↑'}</span>`:''}</th>`).join('')+'</tr>';
+  renderHead(COLS);
   const s=S.page*PAGE, e=Math.min(R.length,s+PAGE); let h='';
   for(let k=s;k<e;k++){const i=R[k], r=root[i], d=depth[i], st=meta.cl[cl[i]]||'';
     const cell={
@@ -743,6 +746,31 @@ function renderAnalysisCs(){
 function applySkin(v){ const r=document.documentElement; if(v==='auto') r.removeAttribute('data-skin'); else r.setAttribute('data-skin',v); }
 function initSkin(){ let v='auto'; try{ v=localStorage.getItem('skin')||'auto'; }catch(e){} if(![...$('skin').options].some(o=>o.value===v)) v='auto'; $('skin').value=v; applySkin(v);
   $('skin').addEventListener('change',()=>{ const x=$('skin').value; applySkin(x); try{localStorage.setItem('skin',x);}catch(e){} }); }
+
+// ---- per-column search in the table header ----
+let colF={}; let headKey='';
+function colText(id,i){ const {m,root,depth,cost,cd,par,cl,ag,br,ty,no,meta}=D, r=root[i];
+  switch(id){ case 'f':return no[r]; case 'fm':return mlabel(m[r]); case 'cost':return baht(cost[r]); case 'dp':return String(depth[i]);
+    case 'rd':return par[i]>=0?dstr(refDate(i)):'-'; case 'l':return no[i]; case 'ctn':return D.ctn?meta.ctn[D.ctn[i]]||'':''; case 'ty':return meta.ty[ty[i]]||'';
+    case 'lm':return mlabel(m[i]); case 'cl':return meta.cl[cl[i]]||''; case 'ag':return meta.ag[ag[i]]||''; case 'cs':return D.cs?meta.cs[D.cs[i]]||'':'';
+    case 'cd':return dstr(cd[i]); case 'rg':return D.rg?meta.rg[D.rg[i]]||'':''; case 'br':return meta.br[br[i]]||'';
+    case 'af':return S.after&&S.after[i]>=0?no[S.after[i]]+' ('+mlabel(m[S.after[i]])+')':''; default:return ''; } }
+function activeColF(){ const vis=new Set(cols().map(c=>c.id)); return Object.entries(colF).filter(([id,v])=>v&&vis.has(id)).map(([id,v])=>[id,v.toLowerCase()]); }
+function applyColFilters(rows){ const act=activeColF(); if(!act.length) return rows; const out=[];
+  for(const i of rows){ let ok=true; for(const [id,v] of act){ if(!colText(id,i).toLowerCase().includes(v)){ok=false;break;} } if(ok) out.push(i); }
+  return Int32Array.from(out); }
+function renderHead(COLS){
+  const key=COLS.map(c=>c.id).join(',')+'|'+S.sort+'|'+S.dir;
+  if(key===headKey&&$('thead').querySelector('.cf')) return; headKey=key;
+  const top='<tr>'+COLS.map(c=>`<th class="${c.cls} ${c.k?'sortable':''}" ${c.k?`data-k="${c.k}"`:''}>${c.t}${c.k&&S.sort===c.k?` <span class="ar">${S.dir<0?'↓':'↑'}</span>`:''}</th>`).join('')+'</tr>';
+  const fr='<tr class="cfrow">'+COLS.map(c=>c.id==='no'?`<th><button class="cfclear" title="ล้างการค้นหาทุกคอลัมน์" aria-label="ล้างการค้นหาทุกคอลัมน์">✕</button></th>`:`<th><input class="cf" data-id="${c.id}" type="search" placeholder="ค้นหา" aria-label="ค้นหาในคอลัมน์ ${esc(c.t)}" value="${esc(colF[c.id]||'')}"></th>`).join('')+'</tr>';
+  $('thead').innerHTML=top+fr;
+}
+(function wireColF(){
+  let t=null;
+  document.addEventListener('input',e=>{ const x=e.target; if(!x.classList||!x.classList.contains('cf')) return; colF[x.dataset.id]=x.value.trim(); clearTimeout(t); t=setTimeout(()=>{S.page=0;S.open.clear();refresh();},250); });
+  document.addEventListener('click',e=>{ if(e.target.closest&&e.target.closest('.cfclear')){ colF={}; document.querySelectorAll('.cf').forEach(i=>i.value=''); S.page=0; refresh(); } });
+})();
 /* ---------- Excel export (minimal xlsx writer) ---------- */
 const CRC=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0;}return t;})();
 function crc32(u8){let c=0xFFFFFFFF;for(let i=0;i<u8.length;i++)c=CRC[(c^u8[i])&255]^(c>>>8);return (c^0xFFFFFFFF)>>>0;}
@@ -823,7 +851,7 @@ async function doExport(){
     }
     const head2=['สัญญาแรก (รหัสสาย)','ทอดที่ (0 = สัญญาแรก)','เลขสัญญา','เดือนเปิด'].concat(ct?['วันทำสัญญา']:[],['วันที่ ref'+(ct?' (วันทำสัญญาใหม่)':' (วันปิดสัญญาก่อนหน้า)')],ct?['วันปิดสัญญาก่อนหน้า']:[],['ประเภท','ยอดจัด+ประกัน (สัญญาแรก)','ยอดจัด+ประกัน (ของสัญญานี้)','สถานะการปิด','ชั้นหนี้ ณ ปิด'],cs?['สถานะการชำระปัจจุบัน']:[],D.rg?['ภาค']:[],['วันที่ปิด','สาขา']);
     const w2=head2.map(()=>18);
-    const crit=[['แหล่งข้อมูล',S.source+' (ถึงเดือน '+mlabel(D.maxM)+')'],['ช่วงที่แสดง/export',S.search?('ค้นหาเลขสัญญา: '+$('q').value.trim()):(f.asof?'สัญญาแรกอยู่ในช่วง '+mlabel(f.f1)+' ถึง '+mlabel(f.f2)+' | สัญญาล่าสุด = สัญญาล่าสุดของสายที่เปิดไม่เกินเดือน '+mlabel(f.f2)+' (สัญญาที่ ref ต่อหลังจากนั้นแยกไว้ในคอลัมน์ ref ต่อหลังสิ้นช่วง)':'เดือนสัญญาแรก '+mlabel(f.f1)+' ถึง '+mlabel(f.f2)+' | เดือนเปิดล่าสุด '+mlabel(f.l1)+' ถึง '+mlabel(f.l2)+' (ช่วงหลักอิงตาม'+(f.first?'สัญญาแรก':'สัญญาล่าสุด')+')')],['จำนวนครั้ง ref',$('depth').selectedOptions[0].text],['ประเภทสัญญาล่าสุด',S.search?'-':typeLabel()],['ประเภทสินเชื่อ (NL_ContractTypeName)',S.search?'-':ctnLabel()],['สถานะการปิด',$('status').selectedOptions[0].text],['สถานะการชำระปัจจุบัน',D.cs?$('cstat').selectedOptions[0].text:'(ไม่มีในข้อมูล)'],['สาขา',$('branch').selectedOptions[0].text],['ภาค (NL_RegionName)',D.rg?$('region').selectedOptions[0].text:'(ไม่มีในข้อมูล)'],
+    const crit=[['แหล่งข้อมูล',S.source+' (ถึงเดือน '+mlabel(D.maxM)+')'],['ช่วงที่แสดง/export',S.search?('ค้นหาเลขสัญญา: '+$('q').value.trim()):(f.asof?'สัญญาแรกอยู่ในช่วง '+mlabel(f.f1)+' ถึง '+mlabel(f.f2)+' | สัญญาล่าสุด = สัญญาล่าสุดของสายที่เปิดไม่เกินเดือน '+mlabel(f.f2)+' (สัญญาที่ ref ต่อหลังจากนั้นแยกไว้ในคอลัมน์ ref ต่อหลังสิ้นช่วง)':'เดือนสัญญาแรก '+mlabel(f.f1)+' ถึง '+mlabel(f.f2)+' | เดือนเปิดล่าสุด '+mlabel(f.l1)+' ถึง '+mlabel(f.l2)+' (ช่วงหลักอิงตาม'+(f.first?'สัญญาแรก':'สัญญาล่าสุด')+')')],['จำนวนครั้ง ref',$('depth').selectedOptions[0].text],['ประเภทสัญญาล่าสุด',S.search?'-':typeLabel()],['ประเภทสินเชื่อ (NL_ContractTypeName)',S.search?'-':ctnLabel()],['สถานะการปิด',$('status').selectedOptions[0].text],['สถานะการชำระปัจจุบัน',D.cs?$('cstat').selectedOptions[0].text:'(ไม่มีในข้อมูล)'],['สาขา',$('branch').selectedOptions[0].text],['ค้นหารายคอลัมน์',activeColF().length?activeColF().map(([id,v])=>{const c=TBL.find(x=>x[0]===id);return (c?c[1]:id)+' มีคำว่า "'+v+'"';}).join(', '):'-'],['ภาค (NL_RegionName)',D.rg?$('region').selectedOptions[0].text:'(ไม่มีในข้อมูล)'],
       ['การเชื่อมสายสัญญา',$('link').selectedOptions[0].text],['จำนวนสายสัญญา',R.length],['หมายเหตุ','1 แถว = 1 สายสัญญา (นับจากสัญญาล่าสุด) · คอลัมน์ ครั้งที่ k = สัญญาก่อนหน้าที่ถูก ref (ครั้งที่ 1 = สัญญาแรก) ไม่รวมสัญญาปัจจุบัน ซึ่งอยู่ในคอลัมน์ สัญญาล่าสุด แล้ว · วันที่ ref = '+(D.ct?'วันทำสัญญา (NL_ContractDate) ของสัญญานั้น':'วันที่ปิดของสัญญาก่อนหน้า (ไฟล์นี้ไม่มี NL_ContractDate จึงไม่มีวันที่ของครั้งที่ 1)')+' · ยอดจัด+ประกันในชีตสรุปใช้ของสัญญาแรก']];
         const x1=sheetXml(head1,rows1,w1), x2=sheetXml(head2,rows2,w2), x3=sheetXml(['เงื่อนไข','ค่า'],crit,[24,100]);
     const AR=analysis()||[]; const r2=v=>({n:Math.round(v*100)/100}); const x4=sheetXml(['ประเภทสินเชื่อ','เกณฑ์ (บาท)','เกินเกณฑ์ (สาย)','ยอดเกินเกณฑ์','ไม่เกินเกณฑ์ (สาย)','ยอดไม่เกินเกณฑ์','รวม (สาย)','ยอดรวม'],
