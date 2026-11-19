@@ -148,6 +148,9 @@ tr.detail td{background:var(--bg);padding:10px 14px 14px;white-space:normal}
 #anaCs thead tr:first-child th{text-align:center;border-bottom:1px solid var(--line)}
 #anaCs thead .sub{font-size:11px}
 #anaCs td.c{border-left:1px solid var(--line)}
+.fz{position:sticky;z-index:1;background:var(--surface)}
+th.fz{z-index:3}
+.fz.fzl{box-shadow:inset -1px 0 0 var(--line),4px 0 6px -4px rgba(0,0,0,.18)}
 </style>
 </head>
 <body>
@@ -645,7 +648,7 @@ function renderTable(){
     if(S.open.has(i)) h+=`<tr class="detail"><td colspan="${COLS.length}">${chainHtml(i)}</td></tr>`;
   }
   if(!R.length) h=`<tr><td colspan="${COLS.length}" class="hint" style="padding:20px">ไม่พบสายสัญญาตามเงื่อนไขที่เลือก</td></tr>`;
-  $('tbody').innerHTML=h;
+  $('tbody').innerHTML=h; freezeCols($('tbl'),Math.min(2,cols().length));
   $('tcount').textContent=`(${fmt(R.length)} สาย)`;
   const pages=Math.max(1,Math.ceil(R.length/PAGE)); $('pg').textContent=`หน้า ${S.page+1} / ${fmt(pages)}`;
   $('prev').disabled=S.page===0; $('next').disabled=S.page+1>=pages;
@@ -723,7 +726,7 @@ function renderAnalysis(){
   for(const e of rows){ const n=e.oc+e.uc;
     if(e.branch){ h+=`<tr><td>${esc(e.name)}</td><td class="r">อนุมัติโดยสาขาทั้งหมด</td><td class="r">-</td><td class="r">-</td><td class="r">-</td><td class="r">-</td><td class="r">${fmt(n)}</td><td class="r">${money(e.us)}</td><td class="r">-</td></tr>`; continue; }
     h+=`<tr class="${e.tot?'tot':e.sub?'sub':''}"><td>${esc(e.name)}</td><td class="r">${e.th?fmt(e.th):'-'}</td><td class="r over">${fmt(e.oc)}</td><td class="r over">${money(e.os)}</td><td class="r">${fmt(e.uc)}</td><td class="r">${money(e.us)}</td><td class="r">${fmt(n)}</td><td class="r">${money(e.os+e.us)}</td><td class="r">${n?(e.oc/n*100).toFixed(1)+'%':'-'}</td></tr>`; }
-  $('ana').innerHTML=h+'</tbody>';
+  $('ana').innerHTML=h+'</tbody>'; freezeCols($('ana'),1);
 }
 
 const CS_GROUPS=[['g20o','เกณฑ์ 20,000 · เกิน'],['g20u','เกณฑ์ 20,000 · ไม่เกิน'],['g55o','เกณฑ์ 55,000 · เกิน'],['g55u','เกณฑ์ 55,000 · ไม่เกิน'],['br','จำนำทะเบียนเล่ม (สาขา)'],['all','รวม']];
@@ -772,6 +775,7 @@ function renderAnalysisCs(){
       +G.map(([g])=>{const ov=g.endsWith('o')&&r[g][0]?'over':''; return `<td class="r c ${ov}">${r[g][0]?fmt(r[g][0]):'-'}</td><td class="r ${ov}">${r[g][0]?money(r[g][1]):'-'}</td>`;}).join('')
       +NC.map(([g])=>`<td class="r npl ${g==='pct'&&r.npl>0?'over':''}">${nplCell(r,g)}</td>`).join('')+'</tr>'; }
   $('anaCs').innerHTML=h+'</tbody>';
+  freezeCols($('anaCs'),two?2:1);
   { const th=$('anaCs').tHead; const h1=th.rows[0].cells[th.rows[0].cells.length-1]; requestAnimationFrame(()=>{ const off=th.rows[0].querySelector('th.c')?th.rows[0].querySelector('th.c').offsetHeight:0; for(const c of th.rows[1].cells) c.style.top=off+'px'; }); }
   const T=rows[rows.length-1]; $('nplSum').hidden=!D.npl; if(D.npl) $('nplSum').innerHTML=`ชั้นที่เลือก: มูลหนี้คงเหลือรวม <b>${money(T.rem)}</b> · มูลหนี้เสียรวม <b>${money(T.npl)}</b> (${fmt(T.nplc)} สาย) · คิดเป็น <b>${T.rem?(T.npl/T.rem*100).toFixed(2):'0.00'}%</b> ของมูลหนี้คงเหลือ`;
   setTimeout(()=>drawAna(2),0);
@@ -858,6 +862,18 @@ function drawAna(a){
 }
 document.addEventListener('click',e=>{ const b=e.target.closest&&e.target.closest('.vbar button'); if(!b) return; const a=+b.dataset.a;
   AV[a][b.dataset.k]=b.dataset.v; try{localStorage.setItem('anaView',JSON.stringify(AV));}catch(x){} drawAna(a); });
+
+// freeze the first n columns of a table (sticky left)
+function freezeCols(tbl,n){
+  if(!tbl||!n) return;
+  requestAnimationFrame(()=>{
+    const body=[...tbl.tBodies[0]?tbl.tBodies[0].rows:[]].find(r=>r.cells.length>n); if(!body) return;
+    const lefts=[]; let x=0; for(let k=0;k<n;k++){ lefts.push(x); x+=body.cells[k].getBoundingClientRect().width; }
+    const mark=(c,k)=>{ c.classList.add('fz'); c.classList.toggle('fzl',k===n-1); c.style.left=lefts[k]+'px'; };
+    for(const r of tbl.tBodies[0].rows){ if(r.cells.length<=n) continue; for(let k=0;k<n;k++) mark(r.cells[k],k); }
+    if(tbl.tHead) for(const r of tbl.tHead.rows){ let k=0; for(const c of r.cells){ if(k>=n) break; if(c.rowSpan>1||r===tbl.tHead.rows[0]||r.classList.contains('cfrow')){ mark(c,k); k+=c.colSpan; } else break; } }
+  });
+}
 /* ---------- Excel export (minimal xlsx writer) ---------- */
 const CRC=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0;}return t;})();
 function crc32(u8){let c=0xFFFFFFFF;for(let i=0;i<u8.length;i++)c=CRC[(c^u8[i])&255]^(c>>>8);return (c^0xFFFFFFFF)>>>0;}
