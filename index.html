@@ -125,6 +125,11 @@ tr.detail td{background:var(--bg);padding:10px 14px 14px;white-space:normal}
 .cfg{margin-top:10px;display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start}
 .cfg>div{flex:1 1 260px}
 .cfg .lab{display:block;font-size:12px;color:var(--muted);margin-bottom:4px;font-weight:500}
+.chips.grid3{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.csgroups{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:800px){.csgroups{grid-template-columns:1fr}}
+.csgroups .gh{font-size:12px;color:var(--muted);font-weight:600;margin-bottom:4px}
+.csgroups .chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:6px 12px}
 </style>
 </head>
 <body>
@@ -175,10 +180,11 @@ tr.detail td{background:var(--bg);padding:10px 14px 14px;white-space:normal}
         <div class="f"><label for="anaAmt">ยอดที่ใช้</label><select id="anaAmt"><option value="first">ยอดจัด+ประกัน สัญญาแรก</option><option value="latest">ยอดจัด+ประกัน สัญญาล่าสุด</option></select></div></div>
       <div class="tablewrap"><table id="ana"></table></div>
       <div id="anaCsWrap"><h2 style="margin:16px 0 8px">ผลงานจัดเก็บ แยกตามชั้น (ContractStatus ของสัญญาล่าสุด) <span class="hint">แต่ละช่อง: จำนวนสาย / ยอดเงิน</span></h2>
-      <div class="cfg"><div class="f"><label for="anaRow">แยกแถวตาม</label><select id="anaRow"><option value="cs">ชั้น</option><option value="cs_ctn">ชั้น × ประเภทสินเชื่อ</option><option value="ctn_cs">ประเภทสินเชื่อ × ชั้น</option><option value="cs_rg">ชั้น × ภาค</option><option value="rg_cs">ภาค × ชั้น</option></select></div>
-        <div><span class="lab">คอลัมน์ที่แสดง (เลือกได้)</span><div class="chips" id="anaCols"></div></div>
-      <div style="margin-top:10px"><span class="lab" style="display:block;font-size:12px;color:var(--muted);margin-bottom:4px;font-weight:500">ชั้นที่แสดง (เลือกได้)</span><div class="chips" id="anaCsSel"></div>
-        <div class="trow"><button id="csAll">เลือกทุกชั้น</button><button id="csNone">ล้างที่เลือก</button></div></div>
+      <div class="cfg"><div class="f" style="flex:0 1 260px"><label for="anaRow">แยกแถวตาม</label><select id="anaRow"><option value="cs">ชั้น</option><option value="cs_ctn">ชั้น × ประเภทสินเชื่อ</option><option value="ctn_cs">ประเภทสินเชื่อ × ชั้น</option><option value="cs_rg">ชั้น × ภาค</option><option value="rg_cs">ภาค × ชั้น</option></select></div>
+        <div style="flex:1 1 420px"><span class="lab">คอลัมน์ที่แสดง</span><div class="chips grid3" id="anaCols"></div></div></div>
+      <details class="cssd" open><summary class="lab" style="cursor:pointer;margin-top:12px">ชั้นที่แสดง <span id="csCount" class="hint"></span></summary>
+        <div class="trow" style="margin:6px 0"><button id="csAll">เลือกทุกชั้น</button><button id="csOpen">เฉพาะชั้นที่ยังไม่ปิด</button><button id="csClosed">เฉพาะสถานะปิด</button><button id="csNone">ล้างที่เลือก</button></div>
+        <div id="anaCsSel" class="csgroups"></div></details>
       <div class="tablewrap" style="margin-top:8px"><table id="anaCs"></table></div></div>
       <div class="hint" style="margin-top:6px">ประเภทสินเชื่อใช้ของสัญญาล่าสุด · Nano Finance และ Personal Unsecured Loan เกณฑ์ 20,000 บาท · ประเภทอื่นเกณฑ์ 55,000 บาท · "เกิน" คือมากกว่าเกณฑ์ ยอดเท่ากับเกณฑ์นับเป็น "ไม่เกิน" · สินเชื่อเงินด่วน (จำนำทะเบียนเล่ม) อนุมัติโดยสาขาทั้งหมด ไม่แยกตามเกณฑ์</div>
     </div>
@@ -445,8 +451,10 @@ function wire(){
   $('link').addEventListener('change',()=>{ setLink(D,$('link').value); S.page=0; S.open.clear(); if(S.search) doSearch(); refresh(); });
   $('anaAmt').addEventListener('change',renderAnalysis);
   $('anaRow').addEventListener('change',renderAnalysisCs);
-  $('anaCsSel').addEventListener('change',()=>{ csOff=new Set([...document.querySelectorAll('.cssel')].filter(c=>!c.checked).map(c=>c.dataset.c)); saveCsOff(); renderAnalysisCs(); });
+  $('anaCsSel').addEventListener('change',()=>{ csOff=new Set([...document.querySelectorAll('.cssel')].filter(c=>!c.checked).map(c=>c.dataset.c)); saveCsOff(); updCsCount(); renderAnalysisCs(); });
   $('csAll').onclick=()=>{ csOff=new Set(); saveCsOff(); buildCsSel(); renderAnalysisCs(); };
+  $('csOpen').onclick=()=>{ csOff=new Set(D.meta.cs.map(csName).filter(isClosedCs)); saveCsOff(); buildCsSel(); renderAnalysisCs(); };
+  $('csClosed').onclick=()=>{ csOff=new Set(D.meta.cs.map(csName).filter(c=>!isClosedCs(c))); saveCsOff(); buildCsSel(); renderAnalysisCs(); };
   $('csNone').onclick=()=>{ csOff=new Set(D.meta.cs.map(c=>c||'(ไม่ระบุ)')); saveCsOff(); buildCsSel(); renderAnalysisCs(); };
   $('anaCols').addEventListener('change',()=>{ anaOff=new Set([...document.querySelectorAll('.anachk')].filter(c=>!c.checked).map(c=>c.dataset.g)); try{localStorage.setItem('anaOff',JSON.stringify([...anaOff]));}catch(e){} renderAnalysisCs(); });
   $('colChips').addEventListener('change',()=>{ hiddenCols=new Set([...document.querySelectorAll('.colchk')].filter(c=>!c.checked).map(c=>c.dataset.id)); try{localStorage.setItem('hiddenCols',JSON.stringify([...hiddenCols]));}catch(e){} renderTable(); });
@@ -696,7 +704,14 @@ const CS_GROUPS=[['g20o','เกณฑ์ 20,000 · เกิน'],['g20u','เ�
 let csOff=new Set(); try{ csOff=new Set(JSON.parse(localStorage.getItem('csOff')||'[]')); }catch(e){}
 function saveCsOff(){ try{localStorage.setItem('csOff',JSON.stringify([...csOff]));}catch(e){} }
 let anaOff=new Set(); try{ anaOff=new Set(JSON.parse(localStorage.getItem('anaOff')||'[]')); }catch(e){}
-function buildCsSel(){ if(!D.cs){$('anaCsSel').innerHTML='';return;} $('anaCsSel').innerHTML=D.meta.cs.map(c=>c||'(ไม่ระบุ)').sort().map(c=>`<label><input type="checkbox" class="cssel" data-c="${esc(c)}" ${csOff.has(c)?'':'checked'}>${esc(c)}</label>`).join(''); }
+const csName=c=>c||'(ไม่ระบุ)', isClosedCs=c=>/^ปิด/.test(c);
+function buildCsSel(){ if(!D.cs){$('anaCsSel').innerHTML='';return;}
+  const all=D.meta.cs.map(csName).sort((a,b)=>a.localeCompare(b,'th',{numeric:true}));
+  const chip=c=>`<label><input type="checkbox" class="cssel" data-c="${esc(c)}" ${csOff.has(c)?'':'checked'}>${esc(c)}</label>`;
+  const op=all.filter(c=>!isClosedCs(c)), cl=all.filter(isClosedCs);
+  $('anaCsSel').innerHTML=`<div><div class="gh">ชั้นที่ยังไม่ปิด (${op.length})</div><div class="chips">${op.map(chip).join('')}</div></div><div><div class="gh">สถานะปิด (${cl.length})</div><div class="chips">${cl.map(chip).join('')}</div></div>`;
+  updCsCount(); }
+function updCsCount(){ const n=D.meta.cs.length, on=n-D.meta.cs.filter(c=>csOff.has(csName(c))).length; $('csCount').textContent=`(เลือก ${on} จาก ${n} ชั้น)`; }
 function buildAnaCols(){ buildCsSel(); $('anaCols').innerHTML=CS_GROUPS.map(([g,n])=>`<label><input type="checkbox" class="anachk" data-g="${g}" ${anaOff.has(g)?'':'checked'}>${n}</label>`).join(''); 
   const o=$('anaRow'); for(const opt of o.options){ const v=opt.value; opt.hidden=opt.disabled=((v.includes('ctn')&&!D.ctn)||(v.includes('rg')&&!D.rg)); } if(o.selectedOptions[0]&&o.selectedOptions[0].disabled) o.value='cs'; }
 function anaKey(mode,i){
