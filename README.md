@@ -42,6 +42,8 @@
 | ContractStatus | สถานะการชำระปัจจุบัน | ไม่บังคับ |
 | NL_ContractTypeName | ประเภทสินเชื่อ | ไม่บังคับ |
 | NL_RegionName | ภาค | ไม่บังคับ |
+| EIRAgingRemainCostNPL | มูลหนี้เสีย | ไม่บังคับ (ใช้คู่กับ CostAndInsurenceNPL) |
+| CostAndInsurenceNPL | มูลหนี้คงเหลือของยอดจัดรวมประกัน | ไม่บังคับ |
 
 คอลัมน์อื่นในไฟล์ถูกข้ามไป ชื่อหัวคอลัมน์ไม่สนตัวพิมพ์เล็กใหญ่
 
