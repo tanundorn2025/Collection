@@ -182,16 +182,20 @@ table{border-collapse:separate!important;border-spacing:0}
 .chain{border-collapse:collapse!important}
 .fz{box-shadow:inset 0 -1px 0 var(--line)}
 .fz.fzl{box-shadow:inset 0 -1px 0 var(--line),inset -1px 0 0 var(--line),4px 0 6px -4px rgba(0,0,0,.18)}
+#dropOv{position:fixed;inset:0;z-index:50;background:color-mix(in srgb,var(--accent) 18%,transparent);display:flex;align-items:center;justify-content:center;pointer-events:none}
+#dropOv[hidden]{display:none}
+#dropOv div{border:3px dashed var(--accent);border-radius:16px;padding:40px 56px;background:var(--surface);color:var(--accent);font-size:20px;font-weight:600}
 </style>
 </head>
 <body>
+<div id="dropOv" hidden><div>วางไฟล์ .xlsx หรือ .csv ที่นี่เพื่ออัปโหลด</div></div>
 <div class="wrap">
   <header>
     <div class="hdr"><div><h1>ติดตามสายสัญญา Refinance</h1>
     <p class="sub" id="sub">ดูว่าแต่ละสัญญาถูก ref ต่อกันมากี่ทอด และแต่ละทอดทำสัญญาวันที่เท่าไหร่</p></div><div class="themebar"><label for="skin" class="hint">ธีม</label><select id="skin"><option value="auto">ตามเครื่อง</option><option value="light">สว่าง</option><option value="dark">มืด</option><option value="pink">พาสเทล ชมพู</option><option value="mint">พาสเทล มิ้นต์</option><option value="sky">พาสเทล ฟ้า</option><option value="lavender">พาสเทล ลาเวนเดอร์</option><option value="peach">พาสเทล พีช</option></select></div></div>
-    <div class="upl top"><button class="primary" id="upBtn">อัปโหลดข้อมูลเดือนใหม่ (.xlsx / .csv)</button><input id="upFile" type="file" accept=".xlsx,.csv"><span id="ustat">ไฟล์ต้องรวมสัญญาทั้งหมด หัวคอลัมน์เหมือนไฟล์เดิม (NL_ContractDate และ ContractStatus ไม่บังคับ) ไฟล์อ่านในเบราว์เซอร์เท่านั้น ไม่ถูกส่งไปที่อื่น</span></div>
+    <div class="upl top"><button class="primary" id="upBtn">อัปโหลดข้อมูลเดือนใหม่ (.xlsx / .csv)</button><span class="hint">หรือลากไฟล์มาวางที่หน้านี้</span><input id="upFile" type="file" accept=".xlsx,.csv"><span id="ustat">ไฟล์ต้องรวมสัญญาทั้งหมด หัวคอลัมน์เหมือนไฟล์เดิม (NL_ContractDate และ ContractStatus ไม่บังคับ) ไฟล์อ่านในเบราว์เซอร์เท่านั้น ไม่ถูกส่งไปที่อื่น</span></div>
   </header>
-  <div id="load" class="panel">ยังไม่มีข้อมูล กดปุ่ม "อัปโหลดข้อมูลเดือนใหม่" ด้านบนเพื่อเลือกไฟล์ .xlsx หรือ .csv หลังรีเฟรชหน้าต้องอัปโหลดใหม่ทุกครั้ง</div>
+  <div id="load" class="panel">ยังไม่มีข้อมูล ลากไฟล์ .xlsx หรือ .csv มาวางที่หน้านี้ หรือกดปุ่ม "อัปโหลดข้อมูลเดือนใหม่" ด้านบน หลังรีเฟรชหน้าต้องอัปโหลดใหม่ทุกครั้ง</div>
   <div id="app" hidden>
     <div class="panel">
       <div class="filters">
@@ -532,10 +536,20 @@ function wire(){
   $('thead').addEventListener('click',e=>{const th=e.target.closest('th[data-k]'); if(!th)return; const k=th.dataset.k; if(S.sort===k)S.dir*=-1; else {S.sort=k;S.dir=-1;} S.page=0;sortRows();renderTable();});
   $('tbody').addEventListener('click',e=>{const tr=e.target.closest('tr.main'); if(!tr)return; const i=Number(tr.dataset.i); if(S.open.has(i))S.open.delete(i); else S.open.add(i); renderTable();});
   $('upBtn').onclick=()=>$('upFile').click();
-  $('upFile').addEventListener('change',onUpload);
+  $('upFile').addEventListener('change',()=>onUpload());
+  // drag & drop a file anywhere on the page
+  let dragN=0; const ov=$('dropOv');
+  const hasFile=e=>e.dataTransfer&&[...e.dataTransfer.types].includes('Files');
+  window.addEventListener('dragenter',e=>{ if(!hasFile(e)) return; e.preventDefault(); dragN++; ov.hidden=false; });
+  window.addEventListener('dragover',e=>{ if(!hasFile(e)) return; e.preventDefault(); e.dataTransfer.dropEffect='copy'; });
+  window.addEventListener('dragleave',e=>{ if(!hasFile(e)) return; dragN=Math.max(0,dragN-1); if(!dragN) ov.hidden=true; });
+  window.addEventListener('drop',e=>{ if(!hasFile(e)) return; e.preventDefault(); dragN=0; ov.hidden=true;
+    const f=e.dataTransfer.files[0]; if(!f) return;
+    if(!/\.(xlsx|csv)$/i.test(f.name)){ const st=$('ustat'); st.style.color='var(--warm)'; st.textContent='รองรับเฉพาะไฟล์ .xlsx หรือ .csv ('+f.name+')'; return; }
+    onUpload(null,f); });
 }
-async function onUpload(){
-  const f=$('upFile').files[0]; if(!f) return; const st=$('ustat'); const t0=Date.now();
+async function onUpload(ev,dropped){
+  const f=dropped||$('upFile').files[0]; if(!f) return; if($('upBtn').disabled) return; const st=$('ustat'); const t0=Date.now();
   $('upBtn').disabled=true; st.style.color='';
   try{
     const r=await loadFile(f,n=>{ st.textContent=n===-1?'กำลังแตกไฟล์ .xlsx…':n===-2?'กำลังสร้างสายสัญญา…':`กำลังอ่าน ${fmt(n)} แถว…`; });
